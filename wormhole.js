@@ -7,6 +7,8 @@ let ctx = null;
 let body = null;
 let gui = null;
 
+let viewZ = 0;
+
 const WIDTH = 1920;
 const HEIGHT = 1080;
 // const WIDTH = 480;
@@ -18,7 +20,7 @@ let palette = [];
 let settings = {
 	a: 0,
 	b: 0,
-	distortion: 0.0025,
+	distortion: 0,
 	n: 30,
 	z: 1,
 	
@@ -27,7 +29,7 @@ let settings = {
 };
 
 let settings2 = {
-	steps: 300,
+	steps: 1000,
 	stars: 10,
 	diffA: 0.001,
 	diffB: 0.001
@@ -92,6 +94,8 @@ let csteps = [];
 let cstars = [];
 let va = 0;
 let vb = 0;
+let xa = 0;
+let xb = 0;
 
 function generateStars()
 {
@@ -101,7 +105,8 @@ function generateStars()
 	
 	for (i=0; i<settings2.stars; i++)
 	{
-		cstars.push({ x: rande(1000, 0.01), y: rande(1000, 0.01), z: - Math.random() * 100, length: 300 });
+		// cstars.push({ x: rande(1000, 0.01), y: rande(1000, 0.01), z: - Math.random() * 100, length: 300 });
+		cstars.push({ x: rand(200), y: rand(200), z: - Math.random() * 100, length: 300 });
 	}
 }
 
@@ -112,15 +117,17 @@ function pushStep()
 	
 	va = 0.001;
 	
-	settings.a += va;
-	// settings.b += vb;
+	xa += va;
+	// xb += xb;
 	
-	csteps.push(_hackClone(settings));
+	csteps.push({ a: xa, b: xb });
 }
 
 function applyStep()
 {
 	let i;
+	
+	viewZ += 0.05;
 	
 	for (i=1; i<csteps.length; i++)
 	{
@@ -206,8 +213,6 @@ function rpos(p)
 
 //// main
 
-let vz = 0;
-
 function draw()
 {
 	let i, j, k, p, z, star;
@@ -219,7 +224,8 @@ function draw()
 	ctx.strokeStyle = "#fff";
 	ctx.lineWidth = _scale(1);
 	
-	vz += 0.05;
+	
+	console.log(csteps[0].a);
 	
 	for (i=0; i<cstars.length; i++)
 	{
@@ -253,7 +259,7 @@ function draw()
 		{
 			z = 1 - j/20;
 			
-			if (z-vz >= star.z - 10 && z-vz < star.z)
+			if (z-viewZ >= star.z - 10 && z-viewZ < star.z)
 			{
 				p = rpos(pos2(star.x, star.y, z, csteps[j].a, csteps[j].a));
 				if (k == 0)
@@ -279,9 +285,9 @@ function draw()
 			}
 		}
 		
-		if (star.z + vz > 1)
+		if (star.z + viewZ > 1)
 		{
-			star.z -= Math.random() * 100;
+			star.z -= Math.random() * 30;
 		}
 	}
 	
