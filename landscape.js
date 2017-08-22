@@ -1,13 +1,19 @@
 "use strict";
 
+const PALETTE_LENGTH = 1000;
+
 let canvas = null;
 let ctx = null;
 let body = null;
 let gui = null;
 
+const canvas_width = 416;
+const canvas_height = 234;
+
+let palette = [];
 
 let settings = {
-	h1: 0,
+	h1: 0.77,
 	s1: 0.2,
 	l1: 0.3,
 	
@@ -15,10 +21,12 @@ let settings = {
 	s2: 1.0,
 	l2: 0.5,
 	
-	height: 0.5,
+	height: 1.5,
 	
 	mode: 1,
-	pow: 1
+	pow: 0.5,
+	
+	autoUpdate: false
 };
 
 // function lerp(a, b, x)
@@ -31,20 +39,20 @@ function lerp(a, b, x)
 	return a + (b - a) * Math.pow(x, settings.pow);
 }
 
+function convert(p, q, t)
+{
+	if (t < 0) t += 1;
+	if (t > 1) t -= 1;
+	if (t < 1/6) return p + (q - p) * 6 * t;
+	if (t < 3/6) return q;
+	if (t < 4/6) return p + (q - p) * 6 * (4/6 - t);
+	return p
+}
+
 function hsla2rgba(h, s, l, a)
 {
 	// thanks Mohsen! https://stackoverflow.com/a/9493060/460571
 	let p, q, r, g, b;
-	
-	let convert = function(p, q, t)
-	{
-		if (t < 0) t += 1;
-		if (t > 1) t -= 1;
-		if (t < 1/6) return p + (q - p) * 6 * t;
-		if (t < 3/6) return q;
-		if (t < 4/6) return p + (q - p) * 6 * (4/6 - t);
-		return p
-	}
 	
 	if (l < 0.5)
 	{
@@ -73,40 +81,46 @@ function hsla2rgba_(h, s, l, a)
 	return "rgba(" + c[0] + "," + c[1] + "," + c[2] + ", " + c[3] + ")";
 }
 
+function buildPalette()
+{
+	let i;
+	
+	for (i=0; i<PALETTE_LENGTH; i++)
+	{
+		palette[i] = hsla2rgba_(
+			lerp(settings.h1, settings.h2, i/PALETTE_LENGTH),
+			lerp(settings.s1, settings.s2, i/PALETTE_LENGTH),
+			lerp(settings.l1, settings.l2, i/PALETTE_LENGTH),
+			1
+		);
+	}
+}
+
 function draw()
 {
 	let i, n, c1, c2, a;
-	n = 300;
 	
 	a = 1;
+	
+	if (settings.autoUpdate)
+	{
+		buildPalette();
+	}
 	
 	ctx.fillStyle = "#000";
 	ctx.fillRect(0, 0, 300, 300);
 	
 	if (settings.mode == 1)
 	{
-		for (i=0; i<1; i+=1 / n)
+		for (i=0; i<canvas_height; i++)
 		{
 			a = i * settings.height;
 			
-			ctx.fillStyle = hsla2rgba_(
-				lerp(settings.h1, settings.h2, i),
-				lerp(settings.s1, settings.s2, i),
-				lerp(settings.l1, settings.l2, i),
-				a
-			);
-			ctx.fillRect(0, i * 300, 300, 300 / n);
-		}
-	}
-	else
-	{
-		c1 = hsla2rgba(settings.h1, settings.s1, settings.l1, 1);
-		c2 = hsla2rgba(settings.h2, settings.s2, settings.l2, 1);
-		
-		for (i=0; i<1; i+=1 / n)
-		{
-			ctx.fillStyle = "rgba(" + Math.floor(lerp(c1[0], c2[0], i)) + "," + Math.floor(lerp(c1[1], c2[1], i)) + "," + Math.floor(lerp(c1[2], c2[2], i)) + "," + a + ")";
-			ctx.fillRect(0, i * 300, 300, 300 / n);
+			n = Math.floor(i / canvas_height * PALETTE_LENGTH);
+			
+			ctx.fillStyle = palette[n];
+			
+			ctx.fillRect(0, i, canvas_width, 1);
 		}
 	}
 	
@@ -117,12 +131,14 @@ function init()
 {
 	canvas = document.createElement("canvas");
 	
-	canvas.width = 300;
-	canvas.height = 300;
+	canvas.width = canvas_width;
+	canvas.height = canvas_height;
 	ctx = canvas.getContext("2d");
 	
 	body = document.body;
 	body.appendChild(canvas);
+	
+	settings.update = buildPalette;
 	
 	gui = new dat.gui.GUI();
 	
@@ -138,6 +154,9 @@ function init()
 	gui.add(settings, 'pow').min(0.1).max(10);
 	
 	gui.add(settings, 'height').min(0).max(10).step(0.01);
+	gui.add(settings, 'autoUpdate');
+	
+	buildPalette();
 	
 	draw();
 }
