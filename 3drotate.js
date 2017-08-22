@@ -6,24 +6,23 @@ let canvas = null;
 let ctx = null;
 let body = null;
 let gui = null;
-let prng = null;
-let _seed = 0;
 
-const WIDTH = 1920;
-const HEIGHT = 1080;
-// const WIDTH = 480;
-// const HEIGHT = 270;
+// const WIDTH = 1920;
+// const HEIGHT = 1080;
+const WIDTH = 480;
+const HEIGHT = 270;
 const SCALE = HEIGHT / 400;
 
 let palette = [];
 
 let settings = {
 	a: 0,
-	b: 0.0025,
-	c: 30,
-	d: 0,
+	b: 0,
+	distortion: 0.0025,
+	n: 30,
 	z: 1,
 	
+	autoB: false,
 	autoUpdate: true
 };
 
@@ -73,10 +72,10 @@ function cos(x)
 
 function pos(x, y)
 {
-	let s = sin(settings.a);
-	let c = cos(settings.a);
-	let s2 = sin(settings.d);
-	let c2 = cos(settings.d);
+	let s = sin(settings.b);
+	let c = cos(settings.b);
+	let s2 = sin(settings.a);
+	let c2 = cos(settings.a);
 	let p, x2, y2;
 	
 	x2 = c2 * x + s2 * y;
@@ -84,7 +83,7 @@ function pos(x, y)
 	
 	return [
 		_scale((x2 * c) * settings.z),
-		_scale((y2 + s * x2 * y2 * settings.b) * settings.z)
+		_scale((y2 + s * x2 * y2 * settings.distortion) * settings.z)
 	];
 }
 
@@ -104,9 +103,9 @@ function draw()
 	ctx.lineWidth = _scale(1.5);
 	ctx.strokeStyle = "#fff";
 	ctx.beginPath();
-	for (i=0; i<settings.c; i++)
+	for (i=0; i<settings.n; i++)
 	{
-		p = pos(cos(i/settings.c) * 50, sin(i/settings.c) * 50);
+		p = pos(cos(i/settings.n) * 50, sin(i/settings.n) * 50);
 		
 		p[0] += WIDTH / 2;
 		p[1] += HEIGHT / 2;
@@ -122,16 +121,16 @@ function draw()
 	}
 	ctx.stroke();
 	
-	for (i=0; i<settings.c; i++)
+	for (i=0; i<settings.n; i++)
 	{
 		ctx.beginPath();
 		
-		p = pos(-50, (i/settings.c) * 200 - 100);
+		p = pos(-50, (i/settings.n) * 200 - 100);
 		p[0] += WIDTH / 2;
 		p[1] += HEIGHT / 2;
 		ctx.moveTo(p[0], p[1]);
 		
-		p = pos(50, (i/settings.c) * 200 - 100);
+		p = pos(50, (i/settings.n) * 200 - 100);
 		p[0] += WIDTH / 2;
 		p[1] += HEIGHT / 2;
 		ctx.lineTo(p[0], p[1]);
@@ -139,10 +138,13 @@ function draw()
 		ctx.stroke();
 	}
 	
-	settings.a += 0.005;
-	if (settings.a > 1)
+	if (settings.autoB)
 	{
-		settings.a -= 1;
+		settings.b += 0.005;
+		if (settings.b > 1)
+		{
+			settings.b -= 1;
+		}
 	}
 	
 	_raf(draw);
@@ -151,8 +153,6 @@ function draw()
 function init()
 {
 	let tmp;
-	
-	prng = new AlmostRandom();
 	
 	canvas = document.createElement("canvas");
 	
@@ -165,14 +165,15 @@ function init()
 	
 	gui = new dat.gui.GUI();
 	
-	tmp = gui.addFolder("Wormhole");
+	tmp = gui.addFolder("3D rotate");
 	
 	tmp.add(settings, 'a').min(0).max(1).step(0.01);
-	tmp.add(settings, 'b').min(0).max(0.02).step(0.0001);
-	tmp.add(settings, 'c').min(3).max(30).step(1);
-	tmp.add(settings, 'd').min(0).max(1).step(0.01);
+	tmp.add(settings, 'b').min(0).max(1).step(0.01).listen();
+	tmp.add(settings, 'distortion').min(0).max(0.02).step(0.0001);
+	tmp.add(settings, 'n').min(3).max(30).step(1);
 	tmp.add(settings, 'z').min(0).max(1).step(0.01);
 	
+	tmp.add(settings, 'autoB');
 	tmp.add(settings, 'autoUpdate');
 	
 	tmp.open();
