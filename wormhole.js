@@ -207,10 +207,6 @@ function generateSteps()
 	}
 }
 
-function animationStep()
-{
-}
-
 const PI2 = 2 * Math.PI;
 // const PI2 = 6.283;
 
@@ -222,25 +218,6 @@ function sin(x)
 function cos(x)
 {
 	return Math.cos(x * PI2);
-}
-
-function pos(x, y)
-{
-	let s = sin(settings.b);
-	let c = cos(settings.b);
-	let s2 = sin(settings.a);
-	let c2 = cos(settings.a);
-	let p, x2, y2, w;
-	
-	w = Math.pow(10, settings.z / 10);
-	
-	x2 = c2 * x + s2 * y;
-	y2 = s2 * x - c2 * y;
-	
-	return [
-		_scale((x2 * c) * w),
-		_scale((y2 + s * x2 * y2 * settings.distortion) * w)
-	];
 }
 
 function pos2(x, y, z, a, b)
@@ -270,19 +247,17 @@ function rpos(p)
 
 //// main
 
+let frameno = 0;
+
 function draw()
 {
 	let i, j, k, p, lastP, star, a, b, x, y, z, c, now, dt, lineStarted;
+	frameno++;
 	
 	_raf(draw);
 	
 	now = (new Date()).getTime();
 	dt = now - lastFrameTime;
-	
-	if (dt < 33)
-	{
-//		return;
-	}
 	
 	lastFrameTime = now;
 	
@@ -292,14 +267,21 @@ function draw()
 	}
 	
 	ctx.globalCompositeOperation = "source-over";
-	ctx.fillStyle = "#000";
+	ctx.fillStyle = "#f00";
 	ctx.fillRect(0, 0, WIDTH, HEIGHT);
+	
+	ctx.fillStyle = "rgba(0,0,0,0.30)";
+	for (i=0; i<10; i++)
+	{
+		ctx.beginPath();
+		ctx.arc(WIDTH / 2, HEIGHT / 2, 10 * (i / 10) * frameno, 0, PI2);
+		ctx.fill();
+	}
 	
 	ctx.globalCompositeOperation = "lighter";
 	
 	ctx.strokeStyle = "#fff";
 	ctx.lineWidth = _scale(1);
-//	ctx.lineCap = "round";
 	
 	for (i=0; i<cstars.length; i++)
 	{
@@ -355,8 +337,6 @@ function draw()
 		}
 	}
 	
-	// console.log(csteps[10]);
-	
 	pushStep(true);
 }
 
@@ -391,29 +371,6 @@ function init()
 	
 	body = document.body;
 	body.appendChild(canvas);
-	
-/*
-	gui = new dat.gui.GUI();
-	
-	tmp = gui.addFolder("3D rotate");
-	
-	tmp.add(settings, 'a').min(0).max(1).step(0.01);
-	tmp.add(settings, 'b').min(0).max(1).step(0.01).listen();
-	tmp.add(settings, 'distortion').min(0).max(0.02).step(0.0001);
-	tmp.add(settings, 'n').min(3).max(30).step(1);
-	tmp.add(settings, 'z').min(0).max(1).step(0.01);
-	
-	tmp.add(settings, 'autoB');
-	tmp.add(settings, 'autoUpdate');
-	
-	tmp = gui.addFolder("Animation");
-	
-	tmp.add(settings2, "steps").min(1).max(100);
-	tmp.add(window, "generateSteps");
-	tmp.add(window, "animationStep");
-	
-	tmp.open();
-*/
 	
 	generateSteps();
 	restartWormhole();
