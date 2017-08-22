@@ -21,6 +21,7 @@ let settings = {
 	a: 0,
 	b: 0.0025,
 	c: 30,
+	d: 0,
 	z: 1,
 	
 	autoUpdate: true
@@ -74,11 +75,16 @@ function pos(x, y)
 {
 	let s = sin(settings.a);
 	let c = cos(settings.a);
-	let p;
+	let s2 = sin(settings.d);
+	let c2 = cos(settings.d);
+	let p, x2, y2;
+	
+	x2 = c2 * x + s2 * y;
+	y2 = s2 * x - c2 * y;
 	
 	return [
-		_scale((x * c) * settings.z),
-		_scale((y + s * x * y * settings.b) * settings.z)
+		_scale((x2 * c) * settings.z),
+		_scale((y2 + s * x2 * y2 * settings.b) * settings.z)
 	];
 }
 
@@ -164,6 +170,7 @@ function init()
 	tmp.add(settings, 'a').min(0).max(1).step(0.01);
 	tmp.add(settings, 'b').min(0).max(0.02).step(0.0001);
 	tmp.add(settings, 'c').min(3).max(30).step(1);
+	tmp.add(settings, 'd').min(0).max(1).step(0.01);
 	tmp.add(settings, 'z').min(0).max(1).step(0.01);
 	
 	tmp.add(settings, 'autoUpdate');
