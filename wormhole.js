@@ -8,6 +8,8 @@ let body = null;
 let gui = null;
 
 let viewZ = 0;
+let viewZStep = 0.5;
+let lastFrameTime = 0;
 
 const WIDTH = 1920;
 const HEIGHT = 1080;
@@ -20,7 +22,7 @@ let palette = [];
 let settings = {
 	a: 0,
 	b: 0,
-	distortion: 0,
+	distortion: 0.0025,
 	n: 30,
 	z: 1,
 	
@@ -29,8 +31,8 @@ let settings = {
 };
 
 let settings2 = {
-	steps: 1000,
-	stars: 10,
+	steps: 100,
+	stars: 100,
 	diffA: 0.001,
 	diffB: 0.001
 };
@@ -94,8 +96,8 @@ let csteps = [];
 let cstars = [];
 let va = 0;
 let vb = 0;
-let xa = 0;
-let xb = 0;
+let vx = 0;
+let vy = 0;
 
 function generateStars()
 {
@@ -106,36 +108,24 @@ function generateStars()
 	for (i=0; i<settings2.stars; i++)
 	{
 		// cstars.push({ x: rande(1000, 0.01), y: rande(1000, 0.01), z: - Math.random() * 100, length: 300 });
-		cstars.push({ x: rand(200), y: rand(200), z: - Math.random() * 100, length: 300 });
+		cstars.push({ x: rand(200), y: rand(200), z: - Math.random() * 100, length: Math.random() * 10 });
 	}
 }
 
-function pushStep()
+function pushStep(shift)
 {
-	// va = clamp(va + rand(0.001), - settings2.diffA, settings2.diffA);
-	// vb = clamp(vb + rand(0.001), - settings2.diffB, settings2.diffB);
-	
-	va = 0.001;
-	
-	xa += va;
-	// xb += xb;
-	
-	csteps.push({ a: xa, b: xb });
-}
-
-function applyStep()
-{
-	let i;
-	
-	viewZ += 0.05;
-	
-	for (i=1; i<csteps.length; i++)
+	if (shift)
 	{
-		csteps[i].a -= csteps[0].a;
-		csteps[i].b -= csteps[0].b;
+		viewZ += viewZStep;
+		csteps.shift();
 	}
 	
-	csteps.shift();
+	va = clamp(va + rand(0.01), -0.03, 0.03);
+	vb = clamp(vb + rand(0.01), -0.01, 0.01);
+	vx = clamp(vx + rand(1), -3, 3);
+	vy = clamp(vy + rand(1), -3, 3);
+	
+	csteps.push({ a: va, b: vb, x: vx, y: vy });
 }
 
 function generateSteps()
@@ -146,7 +136,7 @@ function generateSteps()
 	
 	for (i=0; i<settings2.steps; i++)
 	{
-		pushStep();
+		pushStep(false);
 	}
 }
 
@@ -215,7 +205,20 @@ function rpos(p)
 
 function draw()
 {
-	let i, j, k, p, z, star;
+	let i, j, k, p, star, a, b, x, y, z, c, lastC, now, dt, lineStarted;
+	
+//	_raf(draw);
+	
+	now = (new Date()).getTime();
+	dt = now - lastFrameTime;
+	console.log(dt);
+	
+	if (dt < 33)
+	{
+//		return;
+	}
+	
+	lastFrameTime = now;
 	
 	ctx.globalCompositeOperation = 'source-over';
 	ctx.fillStyle = "#000";
@@ -225,43 +228,38 @@ function draw()
 	ctx.lineWidth = _scale(1);
 	
 	
-	console.log(csteps[0].a);
-	
 	for (i=0; i<cstars.length; i++)
 	{
 		star = cstars[i];
 		
-		ctx.strokeStyle = "#444";
-		ctx.beginPath();
 		k = 0;
+		a = 0;
+		b = 0;
+		x = 0;
+		y = 0;
+		z = 0;
+		lastC = -1;
 		for (j=0; j<settings2.steps; j++)
 		{
-			z = 1 - j/20;
+			a += csteps[j].a;
+			b += csteps[j].b;
+			x += csteps[j].x;
+			y += csteps[j].y;
+			z -= viewZStep;
 			
-			p = rpos(pos2(star.x, star.y, z, csteps[j].a, csteps[j].a));
-			if (k == 0)
+			if (z - viewZ >= star.z - star.length && z - viewZ < star.z)
 			{
-				ctx.moveTo(p[0], p[1]);
-			}
-			else
-			{
-				ctx.lineTo(p[0], p[1]);
-			}
-			
-			k++;
-		}
-		ctx.stroke();
-		
-		ctx.strokeStyle = "#fff";
-		ctx.beginPath();
-		k = 0;
-		for (j=0; j<settings2.steps; j++)
-		{
-			z = 1 - j/20;
-			
-			if (z-viewZ >= star.z - 10 && z-viewZ < star.z)
-			{
-				p = rpos(pos2(star.x, star.y, z, csteps[j].a, csteps[j].a));
+				p = rpos(pos2(star.x + x, star.y + y, z, a, b));
+				
+				c = Math.floor(_scale(Math.pow(10, z / 500) * 5));
+				
+				console.log("c = " + c);
+				
+				if (!lineStarted)
+				{
+					ctx.beginPath();
+				}
+				
 				if (k == 0)
 				{
 					ctx.moveTo(p[0], p[1]);
@@ -271,7 +269,7 @@ function draw()
 					ctx.lineTo(p[0], p[1]);
 				}
 				
-				k++;
+				lastC = c;
 			}
 			else
 			{
@@ -291,10 +289,7 @@ function draw()
 		}
 	}
 	
-	applyStep();
-	pushStep();
-	
-	_raf(draw);
+	pushStep(true);
 }
 
 function init()
@@ -310,6 +305,7 @@ function init()
 	body = document.body;
 	body.appendChild(canvas);
 	
+/*
 	gui = new dat.gui.GUI();
 	
 	tmp = gui.addFolder("3D rotate");
@@ -330,9 +326,12 @@ function init()
 	tmp.add(window, "animationStep");
 	
 	tmp.open();
+*/
 	
 	generateSteps();
 	generateStars();
+	
+	lastFrameTime = (new Date()).getTime();
 	
 	draw();
 }
