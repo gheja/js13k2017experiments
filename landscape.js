@@ -31,12 +31,12 @@ function lerp(a, b, x)
 	return a + (b - a) * Math.pow(x, settings.pow);
 }
 
-function hsl2rgbx(h, s, l)
+function hsla2rgba(h, s, l, a)
 {
 	// thanks Mohsen! https://stackoverflow.com/a/9493060/460571
 	let p, q, r, g, b;
 	
-	let a = function(p, q, t)
+	let convert = function(p, q, t)
 	{
 		if (t < 0) t += 1;
 		if (t > 1) t -= 1;
@@ -57,20 +57,20 @@ function hsl2rgbx(h, s, l)
 	
 	p = 2 * l - q;
 	
-	r = Math.floor(a(p, q, h + 1/3) * 256);
-	g = Math.floor(a(p, q, h) * 256);
-	b = Math.floor(a(p, q, h - 1/3) * 256);
+	r = Math.floor(convert(p, q, h + 1/3) * 256);
+	g = Math.floor(convert(p, q, h) * 256);
+	b = Math.floor(convert(p, q, h - 1/3) * 256);
 	
-	return [ r, g, b ];
+	return [ r, g, b, a ];
 }
 
-function hsl2rgb(h, s, l)
+function hsla2rgba_(h, s, l, a)
 {
-	let a;
+	let c;
 	
-	a = hsl2rgbx(h, s, l);
+	c = hsla2rgba(h, s, l, a);
 	
-	return "rgba(" + a[0] + "," + a[1] + "," + a[2] + ", 1)";
+	return "rgba(" + c[0] + "," + c[1] + "," + c[2] + ", " + c[3] + ")";
 }
 
 function draw()
@@ -80,22 +80,28 @@ function draw()
 	
 	a = 1;
 	
+	ctx.fillStyle = "#000";
+	ctx.fillRect(0, 0, 300, 300);
+	
 	if (settings.mode == 1)
 	{
 		for (i=0; i<1; i+=1 / n)
 		{
-			ctx.fillStyle = hsl2rgb(
+			a = i * settings.height;
+			
+			ctx.fillStyle = hsla2rgba_(
 				lerp(settings.h1, settings.h2, i),
 				lerp(settings.s1, settings.s2, i),
-				lerp(settings.l1, settings.l2, i)
+				lerp(settings.l1, settings.l2, i),
+				a
 			);
 			ctx.fillRect(0, i * 300, 300, 300 / n);
 		}
 	}
 	else
 	{
-		c1 = hsl2rgbx(settings.h1, settings.s1, settings.l1, 1);
-		c2 = hsl2rgbx(settings.h2, settings.s2, settings.l2, 1);
+		c1 = hsla2rgba(settings.h1, settings.s1, settings.l1, 1);
+		c2 = hsla2rgba(settings.h2, settings.s2, settings.l2, 1);
 		
 		for (i=0; i<1; i+=1 / n)
 		{
@@ -120,16 +126,18 @@ function init()
 	
 	gui = new dat.gui.GUI();
 	
-	gui.add(settings, 'h1').min(0).max(1);
-	gui.add(settings, 's1').min(0).max(1);
-	gui.add(settings, 'l1').min(0).max(1);
+	gui.add(settings, 'h1').min(0).max(1).step(0.01);
+	gui.add(settings, 's1').min(0).max(1).step(0.01);
+	gui.add(settings, 'l1').min(0).max(1).step(0.01);
 	
-	gui.add(settings, 'h2').min(0).max(1);
-	gui.add(settings, 's2').min(0).max(1);
-	gui.add(settings, 'l2').min(0).max(1);
+	gui.add(settings, 'h2').min(0).max(1).step(0.01);
+	gui.add(settings, 's2').min(0).max(1).step(0.01);
+	gui.add(settings, 'l2').min(0).max(1).step(0.01);
 	
 	gui.add(settings, 'mode').min(1).max(2).step(1);
 	gui.add(settings, 'pow').min(0.1).max(10);
+	
+	gui.add(settings, 'height').min(0).max(10).step(0.01);
 	
 	draw();
 }
