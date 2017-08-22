@@ -247,12 +247,9 @@ function rpos(p)
 
 //// main
 
-let frameno = 0;
-
 function draw()
 {
 	let i, j, k, p, lastP, star, a, b, x, y, z, c, now, dt, lineStarted;
-	frameno++;
 	
 	_raf(draw);
 	
@@ -267,16 +264,8 @@ function draw()
 	}
 	
 	ctx.globalCompositeOperation = "source-over";
-	ctx.fillStyle = "#f00";
+	ctx.fillStyle = "#000";
 	ctx.fillRect(0, 0, WIDTH, HEIGHT);
-	
-	ctx.fillStyle = "rgba(0,0,0,0.30)";
-	for (i=0; i<10; i++)
-	{
-		ctx.beginPath();
-		ctx.arc(WIDTH / 2, HEIGHT / 2, 10 * (i / 10) * frameno, 0, PI2);
-		ctx.fill();
-	}
 	
 	ctx.globalCompositeOperation = "lighter";
 	
