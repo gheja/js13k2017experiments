@@ -1,6 +1,11 @@
 "use strict";
 
-const PALETTE_LENGTH = 1000;
+let hasBeginning = true;
+let hasEnd = true;
+let starsTotal = 300;
+
+let starsToRestart = 0;
+let finished = false;
 
 let canvas = null;
 let ctx = null;
@@ -31,8 +36,8 @@ let settings = {
 };
 
 let settings2 = {
-	steps: 100,
-	stars: 100,
+	steps: 40,
+	stars: 250,
 	diffA: 0.001,
 	diffB: 0.001
 };
@@ -89,6 +94,50 @@ function rande(x, y)
 	return r * x;
 }
 
+//// landscape
+function convert(p, q, t)
+{
+	if (t < 0) t += 1;
+	if (t > 1) t -= 1;
+	if (t < 1/6) return p + (q - p) * 6 * t;
+	if (t < 3/6) return q;
+	if (t < 4/6) return p + (q - p) * 6 * (4/6 - t);
+	return p
+}
+
+function hsla2rgba(h, s, l, a)
+{
+	// thanks Mohsen! https://stackoverflow.com/a/9493060/460571
+	let p, q, r, g, b;
+	
+	if (l < 0.5)
+	{
+		q = l * (1 + s);
+	}
+	else
+	{
+		q = l + s - l * s;
+	}
+	
+	p = 2 * l - q;
+	
+	r = Math.floor(convert(p, q, h + 1/3) * 256);
+	g = Math.floor(convert(p, q, h) * 256);
+	b = Math.floor(convert(p, q, h - 1/3) * 256);
+	
+	return [ r, g, b, a ];
+}
+
+function hsla2rgba_(h, s, l, a)
+{
+	let c;
+	
+	c = hsla2rgba(h, s, l, a);
+	
+	return "rgba(" + c[0] + "," + c[1] + "," + c[2] + ", " + c[3] + ")";
+}
+
+
 
 //// 3drotate
 
@@ -96,19 +145,37 @@ let csteps = [];
 let cstars = [];
 let va = 0;
 let vb = 0;
-let vx = 0;
-let vy = 0;
+let vx = -5;
+let vy = -5;
+
+function getStarColor()
+{
+	// let x = [ "acf", "cde", "eef", "ffd", "ffa", "fe6", "fa3" ];
+	// return "#" + x[Math.floor(Math.random() * x.length) ];
+	
+	// return hsla2rgba_(0.55 + rand(0.15), 1, 0.75 + rand(0.25), 0.5 + rand(0.5));
+	
+	return hsla2rgba_(0.53 + rand(0.12), 1, 0.6 + rand(0.5), 1);
+}
 
 function generateStars()
 {
-	let i;
+	let i, x, y;
 	
 	cstars = [];
 	
 	for (i=0; i<settings2.stars; i++)
 	{
-		// cstars.push({ x: rande(1000, 0.01), y: rande(1000, 0.01), z: - Math.random() * 100, length: 300 });
-		cstars.push({ x: rand(200), y: rand(200), z: - Math.random() * 100, length: Math.random() * 10 });
+		x = 0;
+		y = 0;
+		
+		while (Math.sqrt(x * x + y * y) < 300)
+		{
+			x = rand(1200);
+			y = rand(1200);
+		}
+		
+		cstars.push({ x: x, y: y, z: - Math.random() * 20, length: Math.random() * 10, size: Math.random() * 12 + 2, color: getStarColor() });
 	}
 }
 
@@ -120,10 +187,10 @@ function pushStep(shift)
 		csteps.shift();
 	}
 	
-	va = clamp(va + rand(0.01), -0.03, 0.03);
-	vb = clamp(vb + rand(0.01), -0.01, 0.01);
-	vx = clamp(vx + rand(1), -3, 3);
-	vy = clamp(vy + rand(1), -3, 3);
+	va = clamp(va + rand(0.001), -0.03, 0.03);
+	vb = clamp(vb + rand(0.001), -0.025, 0.025);
+	vx = clamp(vx + rand(2), -20, 20);
+	vy = clamp(vy + rand(2), -20, 20);
 	
 	csteps.push({ a: va, b: vb, x: vx, y: vy });
 }
@@ -190,8 +257,8 @@ function pos2(x, y, z, a, b)
 	y2 = s2 * x - c2 * y;
 	
 	return [
-		_scale((x2 * c) * w),
-		_scale((y2 + s * x2 * y2 * settings.distortion) * w)
+		(x2 * c) * w,
+		(y2 + s * x2 * y2 * settings.distortion) * w
 	];
 }
 
@@ -205,13 +272,12 @@ function rpos(p)
 
 function draw()
 {
-	let i, j, k, p, star, a, b, x, y, z, c, lastC, now, dt, lineStarted;
+	let i, j, k, p, lastP, star, a, b, x, y, z, c, now, dt, lineStarted;
 	
-//	_raf(draw);
+	_raf(draw);
 	
 	now = (new Date()).getTime();
 	dt = now - lastFrameTime;
-	console.log(dt);
 	
 	if (dt < 33)
 	{
@@ -220,13 +286,20 @@ function draw()
 	
 	lastFrameTime = now;
 	
-	ctx.globalCompositeOperation = 'source-over';
+	if (finished)
+	{
+		return;
+	}
+	
+	ctx.globalCompositeOperation = "source-over";
 	ctx.fillStyle = "#000";
 	ctx.fillRect(0, 0, WIDTH, HEIGHT);
 	
+	ctx.globalCompositeOperation = "lighter";
+	
 	ctx.strokeStyle = "#fff";
 	ctx.lineWidth = _scale(1);
-	
+//	ctx.lineCap = "round";
 	
 	for (i=0; i<cstars.length; i++)
 	{
@@ -238,7 +311,8 @@ function draw()
 		x = 0;
 		y = 0;
 		z = 0;
-		lastC = -1;
+		lastP = null;
+		
 		for (j=0; j<settings2.steps; j++)
 		{
 			a += csteps[j].a;
@@ -247,49 +321,62 @@ function draw()
 			y += csteps[j].y;
 			z -= viewZStep;
 			
+			ctx.strokeStyle = star.color;
+			
 			if (z - viewZ >= star.z - star.length && z - viewZ < star.z)
 			{
 				p = rpos(pos2(star.x + x, star.y + y, z, a, b));
 				
-				c = Math.floor(_scale(Math.pow(10, z / 500) * 5));
-				
-				console.log("c = " + c);
-				
-				if (!lineStarted)
+				if (lastP !== null)
 				{
-					ctx.beginPath();
-				}
-				
-				if (k == 0)
-				{
-					ctx.moveTo(p[0], p[1]);
-				}
-				else
-				{
-					ctx.lineTo(p[0], p[1]);
-				}
-				
-				lastC = c;
-			}
-			else
-			{
-				if (k > 0)
-				{
-					ctx.stroke();
-					k = 0;
+					c = _scale(Math.pow(10, z / 10) * star.size);
 					
-					break;
+					if (c >= 0.1)
+					{
+						ctx.beginPath();
+						ctx.lineWidth = c;
+						ctx.moveTo(lastP[0], lastP[1]);
+						ctx.lineTo(p[0], p[1]);
+						ctx.stroke()
+					}
 				}
+				
+				lastP = [ p[0], p[1] ];
 			}
 		}
 		
 		if (star.z + viewZ > 1)
 		{
-			star.z -= Math.random() * 30;
+			if (starsToRestart > 0 || !hasEnd)
+			{
+				star.z -= 20;
+				starsToRestart--;
+			}
 		}
 	}
 	
+	// console.log(csteps[10]);
+	
 	pushStep(true);
+}
+
+function restartWormhole()
+{
+	generateStars();
+	
+	if (hasBeginning)
+	{
+		viewZ = -20;
+	}
+	else
+	{
+		viewZ = 0;
+	}
+	
+	if (hasEnd)
+	{
+		starsToRestart = starsTotal;
+	}
 }
 
 function init()
@@ -329,11 +416,16 @@ function init()
 */
 	
 	generateSteps();
-	generateStars();
+	restartWormhole();
 	
 	lastFrameTime = (new Date()).getTime();
 	
 	draw();
+	
+	if (hasBeginning)
+	{
+		body.onclick = restartWormhole;
+	}
 }
 
 var _raf = window.requestAnimationFrame;
