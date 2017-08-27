@@ -187,7 +187,7 @@ function pushStep(shift)
 		csteps.shift();
 	}
 	
-	va = clamp(va + rand(0.001), -0.03, 0.03);
+	va = clamp(va + rand(0.002), -0.05, 0.05);
 	vb = clamp(vb + rand(0.001), -0.025, 0.025);
 	vx = clamp(vx + rand(2), -20, 20);
 	vy = clamp(vy + rand(2), -20, 20);
