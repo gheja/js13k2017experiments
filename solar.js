@@ -87,19 +87,36 @@ function updateBodies()
 
 function drawBodies()
 {
-	let i, b;
+	let i, j, a, b;
 	
-	ctx.strokeStyle = "#444";
-	ctx.lineWidth = _scale(1);
+	ctx.globalCompositeOperation = "lighter";
+	ctx.lineCap = "round";
 	
 	for (i=0; i<system.bodies.length; i++)
 	{
 		b = system.bodies[i];
 		
-		ctx.beginPath();
-		ctx.arc(_x(b.centerX), _y(b.centerY), _scale(b.orbitRadius), 0, PI2);
-		ctx.stroke();
+		if (b.parent == system.bodies[0])
+		{
+			ctx.lineWidth = _scale(2);
+			ctx.strokeStyle = "rgba(255,220,30,0.03)";
+		}
+		else
+		{
+			ctx.lineWidth = _scale(1);
+			ctx.strokeStyle = "rgba(0,200,255,0.03)";
+		}
+		
+		for (j=0; j<30; j++)
+		{
+			a = b.position * PI2;
+			ctx.beginPath();
+			ctx.arc(_x(b.centerX), _y(b.centerY), _scale(b.orbitRadius), a + PI2 * (j/30), a);
+			ctx.stroke();
+		}
 	}
+	
+	ctx.globalCompositeOperation = "source-over";
 	
 	for (i=0; i<system.bodies.length; i++)
 	{
