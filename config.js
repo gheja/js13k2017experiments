@@ -6,4 +6,4 @@
 // const HEIGHT = 270;
 const WIDTH = 1000;
 const HEIGHT = 562;
-const SCALE = HEIGHT / 400;
+const SCALE = Math.min(HEIGHT, WIDTH) / 400;
