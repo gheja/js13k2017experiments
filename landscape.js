@@ -9,12 +9,6 @@ let gui = null;
 let prng = null;
 let _seed = 0;
 
-const WIDTH = 1920;
-const HEIGHT = 1080;
-// const WIDTH = 480;
-// const HEIGHT = 270;
-const SCALE = HEIGHT / 400;
-
 let palette = [];
 
 let settings = {
@@ -36,77 +30,6 @@ let settings = {
 };
 
 
-//// lib
-
-function _scale(x)
-{
-	return x * SCALE;
-}
-
-function clamp(x, min, max)
-{
-	if (x < min)
-	{
-		return min;
-	}
-	
-	if (x > max)
-	{
-		return max;
-	}
-	
-	return x;
-}
-
-function lerp(a, b, x)
-{
-	return a + (b - a) * Math.pow(x, settings.pow);
-}
-
-
-//// landscape
-
-function convert(p, q, t)
-{
-	if (t < 0) t += 1;
-	if (t > 1) t -= 1;
-	if (t < 1/6) return p + (q - p) * 6 * t;
-	if (t < 3/6) return q;
-	if (t < 4/6) return p + (q - p) * 6 * (4/6 - t);
-	return p
-}
-
-function hsla2rgba(h, s, l, a)
-{
-	// thanks Mohsen! https://stackoverflow.com/a/9493060/460571
-	let p, q, r, g, b;
-	
-	if (l < 0.5)
-	{
-		q = l * (1 + s);
-	}
-	else
-	{
-		q = l + s - l * s;
-	}
-	
-	p = 2 * l - q;
-	
-	r = Math.floor(convert(p, q, h + 1/3) * 256);
-	g = Math.floor(convert(p, q, h) * 256);
-	b = Math.floor(convert(p, q, h - 1/3) * 256);
-	
-	return [ r, g, b, a ];
-}
-
-function hsla2rgba_(h, s, l, a)
-{
-	let c;
-	
-	c = hsla2rgba(h, s, l, a);
-	
-	return "rgba(" + c[0] + "," + c[1] + "," + c[2] + ", " + c[3] + ")";
-}
 
 function buildPalette()
 {
