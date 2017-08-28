@@ -135,6 +135,35 @@ function drawBodies()
 		ctx.beginPath();
 		ctx.arc(_x(b.positionX), _y(b.positionY), _scale(b.radius), 0, PI2);
 		ctx.fill();
+		
+		// no shadow on the star
+		if (b.parent == null)
+		{
+			continue;
+		}
+		
+		// planet
+		if (b.parent == system.bodies[0])
+		{
+			c = PI2 * (b.position + 0.25);
+		}
+		// moon
+		else
+		{
+			c = PI2 * (b.parent.position + 0.25);
+		}
+		
+		// sunny side
+		ctx.fillStyle = "rgba(255,255,0,0.2)";
+		ctx.beginPath();
+		ctx.arc(_x(b.positionX), _y(b.positionY), _scale(b.radius), c, c + Math.PI);
+		ctx.fill();
+		
+		// shadow
+		ctx.fillStyle = "rgba(0,0,0,0.44)";
+		ctx.beginPath();
+		ctx.arc(_x(b.positionX), _y(b.positionY), _scale(b.radius), c - Math.PI, c);
+		ctx.fill();
 	}
 }
 
