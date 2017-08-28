@@ -87,9 +87,8 @@ function updateBodies()
 
 function drawBodies()
 {
-	let i, j, a, b;
+	let i, j, a, b, c, stripes;
 	
-	ctx.globalCompositeOperation = "lighter";
 	ctx.lineCap = "round";
 	
 	for (i=0; i<system.bodies.length; i++)
@@ -98,20 +97,30 @@ function drawBodies()
 		
 		if (b.parent == system.bodies[0])
 		{
-			ctx.lineWidth = _scale(2);
-			ctx.strokeStyle = "rgba(255,220,30,0.03)";
+			ctx.lineWidth = _scale(1.5);
 		}
 		else
 		{
 			ctx.lineWidth = _scale(1);
-			ctx.strokeStyle = "rgba(0,200,255,0.03)";
 		}
 		
-		for (j=0; j<30; j++)
+		stripes = b.orbitRadius * 0.8;
+		
+		for (j=0; j<stripes; j++)
 		{
-			a = b.position * PI2;
+			c = ((stripes - j) / stripes);
+			
+			if (b.parent == system.bodies[0])
+			{
+				ctx.strokeStyle = "rgba(255,220,30," + c + ")";
+			}
+			else
+			{
+				ctx.strokeStyle = "rgba(0,200,255," + c + ")";
+			}
+			a = b.position * PI2 - j * 2 * PI2/(stripes * 2 * 1.1);
 			ctx.beginPath();
-			ctx.arc(_x(b.centerX), _y(b.centerY), _scale(b.orbitRadius), a + PI2 * (j/30), a);
+			ctx.arc(_x(b.centerX), _y(b.centerY), _scale(b.orbitRadius), a - PI2 / (stripes * 5), a);
 			ctx.stroke();
 		}
 	}
