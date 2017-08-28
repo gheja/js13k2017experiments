@@ -4,6 +4,7 @@ let canvas = null;
 let ctx = null;
 let body = null;
 let gui = null;
+let frameNumber = 0;
 
 let settings = {
 };
@@ -115,11 +116,19 @@ function draw()
 {
 	_raf(draw);
 	
+	frameNumber++;
+	
 	ctx.fillStyle = "#000";
 	ctx.fillRect(0, 0, WIDTH, HEIGHT);
 	
 	updateBodies();
 	drawBodies();
+}
+
+function updateFps()
+{
+	document.title = frameNumber;
+	frameNumber = 0;
 }
 
 function init()
@@ -140,6 +149,8 @@ function init()
 	
 	body.onclick = regenerate;
 	regenerate();
+	
+	window.setInterval(updateFps, 1000);
 }
 
 var _raf = window.requestAnimationFrame;
