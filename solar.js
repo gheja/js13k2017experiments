@@ -47,7 +47,7 @@ function generateBody(parent, color, size, r, speed, planet)
 		radius: size * (Math.random() + 0.8),
 		orbitRadius: r,
 		position: Math.random(),
-		speed: speed * (Math.random() + 0.8) * 5,
+		speed: speed * (Math.random() + 0.5) * 5,
 		isPlanet: planet
 	};
 }
