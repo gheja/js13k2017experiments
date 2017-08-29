@@ -24,6 +24,21 @@ function _y(y)
 	return HEIGHT / 2 + _scale(y);
 }
 
+function _arc(x, y, r, a, b, fill, stroke)
+{
+	ctx.beginPath();
+	ctx.arc(_x(x), _y(y), _scale(r), a * PI2, b * PI2);
+	if (fill)
+	{
+		ctx.fill();
+	}
+	
+	if (stroke)
+	{
+		ctx.stroke();
+	}
+}
+
 function generateBody(parent, color, size, r, speed)
 {
 	return {
@@ -118,10 +133,9 @@ function drawBodies()
 			{
 				ctx.strokeStyle = "rgba(0,200,255," + c + ")";
 			}
-			a = b.position * PI2 - j * 2 * PI2/(stripes * 2 * 1.1);
-			ctx.beginPath();
-			ctx.arc(_x(b.centerX), _y(b.centerY), _scale(b.orbitRadius), a - PI2 / (stripes * 5), a);
-			ctx.stroke();
+			a = b.position - j * 2 * 1/(stripes * 2 * 1.1);
+			
+			_arc(b.centerX, b.centerY, b.orbitRadius, a - 1 / (stripes * 5), a, 0, 1);
 		}
 	}
 	
@@ -131,10 +145,15 @@ function drawBodies()
 	{
 		b = system.bodies[i];
 		
+		// sunny side
+		if (b.isPlanet)
+		{
+			ctx.fillStyle = "rgba(255,255,0,0.4)";
+			_arc(b.positionX, b.positionY, b.radius * 1.2, 0, 1, 1);
+		}
+		
 		ctx.fillStyle = b.color;
-		ctx.beginPath();
-		ctx.arc(_x(b.positionX), _y(b.positionY), _scale(b.radius), 0, PI2);
-		ctx.fill();
+		_arc(b.positionX, b.positionY, b.radius, 0, 1, 1);
 		
 		// no shadow on the star
 		if (b.parent == null)
@@ -145,25 +164,21 @@ function drawBodies()
 		// planet
 		if (b.parent == system.bodies[0])
 		{
-			c = PI2 * (b.position + 0.25);
+			c = b.position + 0.25;
 		}
 		// moon
 		else
 		{
-			c = PI2 * (b.parent.position + 0.25);
+			c = b.parent.position + 0.25;
 		}
 		
 		// sunny side
 		ctx.fillStyle = "rgba(255,255,0,0.2)";
-		ctx.beginPath();
-		ctx.arc(_x(b.positionX), _y(b.positionY), _scale(b.radius), c, c + Math.PI);
-		ctx.fill();
+		_arc(b.positionX, b.positionY, b.radius, c, c + 0.5, 1);
 		
 		// shadow
 		ctx.fillStyle = "rgba(0,0,0,0.44)";
-		ctx.beginPath();
-		ctx.arc(_x(b.positionX), _y(b.positionY), _scale(b.radius), c - Math.PI, c);
-		ctx.fill();
+		_arc(b.positionX, b.positionY, b.radius, c - 0.5, c, 1);
 	}
 }
 
