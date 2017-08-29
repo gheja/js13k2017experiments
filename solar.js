@@ -39,7 +39,7 @@ function _arc(x, y, r, a, b, fill, stroke)
 	}
 }
 
-function generateBody(parent, color, size, r, speed)
+function generateBody(parent, color, size, r, speed, planet)
 {
 	return {
 		parent: parent,
@@ -47,7 +47,8 @@ function generateBody(parent, color, size, r, speed)
 		radius: size * (Math.random() + 0.8),
 		orbitRadius: r,
 		position: Math.random(),
-		speed: speed * (Math.random() + 0.8) * 5
+		speed: speed * (Math.random() + 0.8) * 5,
+		isPlanet: planet
 	};
 }
 
@@ -63,7 +64,7 @@ function regenerate()
 	
 	for (i=0; i<5; i++)
 	{
-		a = system.bodies.push(generateBody(system.bodies[0], "#07d", 5, i * 30 + 50, 0.0001)) - 1;
+		a = system.bodies.push(generateBody(system.bodies[0], "#07d", 5, i * 30 + 50, 0.0001, 1)) - 1;
 		
 		c = Math.floor(Math.random() * 3);
 		
@@ -110,7 +111,7 @@ function drawBodies()
 	{
 		b = system.bodies[i];
 		
-		if (b.parent == system.bodies[0])
+		if (b.isPlanet)
 		{
 			ctx.lineWidth = _scale(1.5);
 		}
@@ -162,7 +163,7 @@ function drawBodies()
 		}
 		
 		// planet
-		if (b.parent == system.bodies[0])
+		if (b.isPlanet)
 		{
 			c = b.position + 0.25;
 		}
