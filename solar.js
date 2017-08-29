@@ -126,13 +126,20 @@ function drawBodies()
 		{
 			c = ((stripes - j) / stripes);
 			
-			if (b.parent == system.bodies[0])
+			if (Math.floor(frameNumber + b.orbitRadius) % 150 == j)
 			{
-				ctx.strokeStyle = "rgba(255,220,30," + c + ")";
+				ctx.strokeStyle = "#fff";
 			}
 			else
 			{
-				ctx.strokeStyle = "rgba(0,200,255," + c + ")";
+				if (b.parent == system.bodies[0])
+				{
+					ctx.strokeStyle = "rgba(255,220,30," + c + ")";
+				}
+				else
+				{
+					ctx.strokeStyle = "rgba(0,200,255," + c + ")";
+				}
 			}
 			a = b.position - j * 2 * 1/(stripes * 2 * 1.1);
 			
@@ -221,7 +228,7 @@ function init()
 	body.onclick = regenerate;
 	regenerate();
 	
-	window.setInterval(updateFps, 1000);
+	// window.setInterval(updateFps, 1000);
 }
 
 var _raf = window.requestAnimationFrame;
