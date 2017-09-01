@@ -102,7 +102,7 @@ function hsla2rgba_(h, s, l, a)
 	
 	c = hsla2rgba(h, s, l, a);
 	
-	return "rgba(" + c[0] + "," + c[1] + "," + c[2] + ", " + c[3] + ")";
+	return "rgba(" + c[0] + "," + c[1] + "," + c[2] + "," + c[3] + ")";
 }
 
 
