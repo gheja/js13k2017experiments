@@ -14,34 +14,9 @@ let system = {
 	bodies: []
 };
 
-function _x(x)
+function generateBody(parent, size, r, speed, type)
 {
-	return WIDTH / 2 + _scale(x);
-}
-
-function _y(y)
-{
-	return HEIGHT / 2 + _scale(y);
-}
-
-function _arc(x, y, r, a, b, fill, stroke)
-{
-	ctx.beginPath();
-	ctx.arc(_x(x), _y(y), _scale(r), a * PI2, b * PI2);
-	if (fill)
-	{
-		ctx.fill();
-	}
-	
-	if (stroke)
-	{
-		ctx.stroke();
-	}
-}
-
-function generateBody(parent, color, size, r, speed, planet)
-{
-	return {
+	let a = {
 		parent: parent,
 		color: color,
 		radius: size * (Math.random() + 0.8),

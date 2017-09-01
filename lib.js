@@ -8,6 +8,16 @@ function _scale(x)
 	return x * SCALE;
 }
 
+function _x(x)
+{
+	return WIDTH / 2 + _scale(x);
+}
+
+function _y(y)
+{
+	return HEIGHT / 2 + _scale(y);
+}
+
 function clamp(x, min, max)
 {
 	if (x < min)
@@ -63,6 +73,21 @@ function goFullScreen()
 function arrayRandom(a)
 {
 	return a[Math.floor(Math.random() * a.length)];
+}
+
+function _arc(x, y, r, a, b, fill, stroke)
+{
+	ctx.beginPath();
+	ctx.arc(_x(x), _y(y), _scale(r), a * PI2, b * PI2);
+	if (fill)
+	{
+		ctx.fill();
+	}
+	
+	if (stroke)
+	{
+		ctx.stroke();
+	}
 }
 
 
