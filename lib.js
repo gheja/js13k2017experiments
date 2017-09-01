@@ -60,6 +60,11 @@ function goFullScreen()
 	(d.requestFullscreen || d.mozRequestFullScreen || d.webkitRequestFullScreen || d.msRequestFullscreen).call(d);
 }
 
+function arrayRandom(a)
+{
+	return a[Math.floor(Math.random() * a.length)];
+}
+
 
 
 //// landscape
