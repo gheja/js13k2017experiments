@@ -167,6 +167,7 @@ function drawBodies()
 	{
 		b = system.bodies[i];
 		
+		// planet
 		if (b.type == TYPE_PLANET)
 		{
 			// atmosphere
@@ -175,7 +176,6 @@ function drawBodies()
 			_arc(b.positionX, b.positionY, b.radius * 1.2, 0, 1, 0, 1);
 		}
 		
-		// planet
 		ctx.fillStyle = hsla2rgba_(b.def[0], b.def[1], b.def[2], 1);
 		_arc(b.positionX, b.positionY, b.radius, 0, 1, 1);
 		
