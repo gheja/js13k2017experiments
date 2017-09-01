@@ -124,9 +124,9 @@ function hsla2rgba(h, s, l, a)
 	
 	p = 2 * l - q;
 	
-	r = Math.floor(hslaConvert(p, q, h + 1/3) * 256);
-	g = Math.floor(hslaConvert(p, q, h) * 256);
-	b = Math.floor(hslaConvert(p, q, h - 1/3) * 256);
+	r = Math.floor(hslaConvert(p, q, h + 1/3) * 255);
+	g = Math.floor(hslaConvert(p, q, h) * 255);
+	b = Math.floor(hslaConvert(p, q, h - 1/3) * 255);
 	
 	return [ r, g, b, a ];
 }
