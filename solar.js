@@ -36,13 +36,24 @@ function generateBody(parent, size, r, speed, type)
 	let a = {
 		parent: parent,
 		def: arrayRandom(BODY_TYPE_DEFINITIONS[type]),
-		radius: size * (Math.random() + 0.8),
+		radiusBase: size,
+		radiusScale: Math.random(),
+		radius: 0,
 		orbitRadius: r,
 		position: Math.random(),
 		speed: speed * (Math.random() + 0.5) * 5,
-		type: type
+		type: type,
+		childCount: 0
 	};
 	
+	a.radius = a.radiusBase * (a.radiusScale + 0.8);
+	
+	if (parent)
+	{
+		parent.childCount++;
+	}
+	
+	// randomize color a bit
 	a.def[0] *= 1 + (Math.random() - 0.5) * 0.05;
 	
 	return a;
