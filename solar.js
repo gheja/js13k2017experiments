@@ -177,7 +177,7 @@ function drawBodies()
 			// atmosphere
 			ctx.lineWidth = _scale(1);
 			ctx.strokeStyle = hsla2rgba_(0.4, 0.2, 0.8, 0.7);
-			_arc(b.positionX, b.positionY, b.radius * 1.2, 0, 1, 0, 1);
+			_arc(b.positionX, b.positionY, b.radius + 1.5, 0, 1, 0, 1);
 		}
 		
 		ctx.fillStyle = hsla2rgba_(b.def[0], b.def[1], b.def[2], 1);
