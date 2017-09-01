@@ -1,10 +1,27 @@
 "use strict";
 
+const TYPE_STAR = 0;
+const TYPE_PLANET = 1;
+const TYPE_MOON = 2;
+
 let canvas = null;
 let ctx = null;
 let body = null;
 let gui = null;
 let frameNumber = 0;
+
+// [ [ h, s, l, type ], [ ... ], ... ]
+let BODY_TYPE_DEFINITIONS =
+[
+	// star == 0
+	[ [ 0.13, 1.0, 0.7, "warm" ], [ 0.5, 0.4, 0.85, "cold" ], [ 1.0, 0.8, 0.4, "dying red" ] ],
+	
+	// planet == 1
+	[ [ 0, 0.2, 0.9, "icy" ], [ 0.25, 0.5, 0.5, "forest" ], [ 0, 0.5, 0.5, "deserted" ] ],
+	
+	// moon == 2
+	[ [ 0, 0.1, 0.9, "icy" ], [ 0, 0.0, 0.7, "rocky" ] ]
+];
 
 let settings = {
 };
@@ -18,13 +35,17 @@ function generateBody(parent, size, r, speed, type)
 {
 	let a = {
 		parent: parent,
-		color: color,
+		def: arrayRandom(BODY_TYPE_DEFINITIONS[type]),
 		radius: size * (Math.random() + 0.8),
 		orbitRadius: r,
 		position: Math.random(),
 		speed: speed * (Math.random() + 0.5) * 5,
-		isPlanet: planet
+		type: type
 	};
+	
+	a.def[0] *= 1 + (Math.random() - 0.5) * 0.05;
+	
+	return a;
 }
 
 function regenerate()
@@ -33,21 +54,23 @@ function regenerate()
 	
 	system.bodies.length = 0;
 	
-	system.bodies.push(generateBody(null, "#ff0", 13, 0, 0));
+	system.bodies.push(generateBody(null, 13, 0, 0, TYPE_STAR));
 	
 	b = 20;
 	
 	for (i=0; i<5; i++)
 	{
-		a = system.bodies.push(generateBody(system.bodies[0], "#07d", 5, i * 30 + 50, 0.0001, 1)) - 1;
+		a = system.bodies.push(generateBody(system.bodies[0], 5, i * 30 + 50, 0.0001, TYPE_PLANET)) - 1;
 		
 		c = Math.floor(Math.random() * 3);
 		
 		for (j=0; j<c; j++)
 		{
-			system.bodies.push(generateBody(system.bodies[a], "#999", 2, j * 10 + 15, 0.0005));
+			system.bodies.push(generateBody(system.bodies[a], 2, j * 10 + 15, 0.0005, TYPE_MOON));
 		}
 	}
+	
+	describeBody(system.bodies[2]);
 }
 
 function updateBodies()
@@ -59,7 +82,10 @@ function updateBodies()
 		b = system.bodies[i];
 		b.position += b.speed;
 		
-		if (b.parent == null)
+		// TODO: dual stars?
+		// if (b.parent == null)
+		
+		if (b.type == TYPE_STAR)
 		{
 			b.centerX = 0;
 			b.centerY = 0;
@@ -86,7 +112,7 @@ function drawBodies()
 	{
 		b = system.bodies[i];
 		
-		if (b.isPlanet)
+		if (b.type == TYPE_PLANET)
 		{
 			ctx.lineWidth = _scale(1.5);
 		}
@@ -107,9 +133,10 @@ function drawBodies()
 			}
 			else
 			{
-				if (b.parent == system.bodies[0])
+				if (b.type == TYPE_PLANET)
 				{
-					ctx.strokeStyle = "rgba(255,220,30," + c + ")";
+					// ctx.strokeStyle = "rgba(255,220,30," + c + ")";
+					ctx.strokeStyle = hsla2rgba_(b.parent.def[0], b.parent.def[1], b.parent.def[2], c);
 				}
 				else
 				{
@@ -117,6 +144,7 @@ function drawBodies()
 				}
 			}
 			a = b.position - j * 2 * 1/(stripes * 2 * 1.1);
+			// a = j * 2 * 1/(stripes * 2 * 1.1);
 			
 			_arc(b.centerX, b.centerY, b.orbitRadius, a - 1 / (stripes * 5), a, 0, 1);
 		}
@@ -128,24 +156,26 @@ function drawBodies()
 	{
 		b = system.bodies[i];
 		
-		// sunny side
-		if (b.isPlanet)
+		if (b.type == TYPE_PLANET)
 		{
-			ctx.fillStyle = "rgba(255,255,0,0.4)";
-			_arc(b.positionX, b.positionY, b.radius * 1.2, 0, 1, 1);
+			// atmosphere
+			ctx.lineWidth = _scale(1);
+			ctx.strokeStyle = hsla2rgba_(0.4, 0.2, 0.8, 0.7);
+			_arc(b.positionX, b.positionY, b.radius * 1.2, 0, 1, 0, 1);
 		}
 		
-		ctx.fillStyle = b.color;
+		// planet
+		ctx.fillStyle = hsla2rgba_(b.def[0], b.def[1], b.def[2], 1);
 		_arc(b.positionX, b.positionY, b.radius, 0, 1, 1);
 		
 		// no shadow on the star
-		if (b.parent == null)
+		if (b.type == TYPE_STAR)
 		{
 			continue;
 		}
 		
 		// planet
-		if (b.isPlanet)
+		if (b.type == TYPE_PLANET)
 		{
 			c = b.position + 0.25;
 		}
@@ -156,13 +186,45 @@ function drawBodies()
 		}
 		
 		// sunny side
-		ctx.fillStyle = "rgba(255,255,0,0.2)";
-		_arc(b.positionX, b.positionY, b.radius, c, c + 0.5, 1);
+		ctx.fillStyle = hsla2rgba_(b.parent.def[0], b.parent.def[1], b.parent.def[2], 0.3);
+		_arc(b.positionX, b.positionY, b.radius, 0, 1, 1);
 		
 		// shadow
-		ctx.fillStyle = "rgba(0,0,0,0.44)";
+		ctx.fillStyle = "rgba(0,0,0,0.4)";
 		_arc(b.positionX, b.positionY, b.radius, c - 0.5, c, 1);
 	}
+}
+
+function bodySize(b)
+{
+	return "small";
+}
+
+function describeBody(b)
+{
+	let star;
+	let s;
+	
+	s = "Oh, now I remember! Must be ";
+	
+	if (b.type == TYPE_MOON)
+	{
+		s += "on the <" + bodySize(b) + "> [" + b.def[3] + "] moon of ";
+		
+		// hack but cheap
+		b = b.parent;
+	}
+	else
+	{
+		s += "on ";
+	}
+	
+	star = b.parent;
+	s += "a <" + bodySize(b) + "> [" + b.def[3] + "] planet [with no/1/2 moons] ";
+	
+	s += "orbiting a [" + star.def[3] + "] sun."
+	
+	console.log(s);
 }
 
 function draw()
