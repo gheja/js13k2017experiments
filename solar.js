@@ -206,9 +206,44 @@ function drawBodies()
 	}
 }
 
-function bodySize(b)
+function bodySizeString(b)
 {
-	return "small";
+	if (b.radiusScale < 0.15)
+	{
+		return "tiny";
+	}
+	
+	if (b.radiusScale < 0.25)
+	{
+		return "small";
+	}
+	
+	if (b.radiusScale < 0.75)
+	{
+		return "average";
+	}
+	
+	if (b.radiusScale < 0.85)
+	{
+		return "big";
+	}
+	
+	return "huge";
+}
+
+function moonCountString(b)
+{
+	if (b.childCount == 0)
+	{
+		return "no moons";
+	}
+	
+	if (b.childCount == 1)
+	{
+		return "a moon";
+	}
+	
+	return "a few moons";
 }
 
 function describeBody(b)
@@ -220,7 +255,7 @@ function describeBody(b)
 	
 	if (b.type == TYPE_MOON)
 	{
-		s += "on the <" + bodySize(b) + "> [" + b.def[3] + "] moon of ";
+		s += "on the [" + bodySizeString(b) + "] [" + b.def[3] + "] moon of ";
 		
 		// hack but cheap
 		b = b.parent;
@@ -231,7 +266,7 @@ function describeBody(b)
 	}
 	
 	star = b.parent;
-	s += "a <" + bodySize(b) + "> [" + b.def[3] + "] planet [with no/1/2 moons] ";
+	s += "a [" + bodySizeString(b) + "] [" + b.def[3] + "] planet [with " + moonCountString(b) + "] ";
 	
 	s += "orbiting a [" + star.def[3] + "] sun."
 	
