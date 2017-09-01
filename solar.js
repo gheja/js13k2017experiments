@@ -224,7 +224,7 @@ function bodySizeString(b)
 	
 	if (b.radiusScale < 0.75)
 	{
-		return "average";
+		return "medium sized";
 	}
 	
 	if (b.radiusScale < 0.85)
@@ -255,22 +255,18 @@ function describeBody(b)
 	let star;
 	let s;
 	
-	s = "Oh, now I remember! Must be ";
+	s = "Oh, now I remember! Must be on ";
 	
 	if (b.type == TYPE_MOON)
 	{
-		s += "on the [" + bodySizeString(b) + "] [" + b.def[3] + "] moon of ";
+		s += "the [" + bodySizeString(b) + "] [" + b.def[3] + "] moon of ";
 		
 		// hack but cheap
 		b = b.parent;
 	}
-	else
-	{
-		s += "on ";
-	}
 	
 	star = b.parent;
-	s += "a [" + bodySizeString(b) + "] [" + b.def[3] + "] planet [with " + moonCountString(b) + "] ";
+	s += "a [" + bodySizeString(b) + "] [" + b.def[3] + "] planet [with " + moonCountString(b) + "], ";
 	
 	s += "orbiting a [" + star.def[3] + "] sun."
 	
