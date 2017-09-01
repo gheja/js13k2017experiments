@@ -197,7 +197,7 @@ function drawBodies()
 		}
 		
 		// sunny side
-		ctx.fillStyle = hsla2rgba_(b.parent.def[0], b.parent.def[1], b.parent.def[2], 0.3);
+		ctx.fillStyle = hsla2rgba_(system.bodies[0].def[0], system.bodies[0].def[1], system.bodies[0].def[2], 0.2);
 		_arc(b.positionX, b.positionY, b.radius, 0, 1, 1);
 		
 		// shadow
