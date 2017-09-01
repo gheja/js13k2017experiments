@@ -106,31 +106,6 @@ function generateSteps()
 	}
 }
 
-function pos2(x, y, z, a, b)
-{
-	let s = sin(b);
-	let c = cos(b);
-	let s2 = sin(a);
-	let c2 = cos(a);
-	let p, x2, y2, w;
-	
-	w = Math.pow(10, z / 10);
-	
-	x2 = c2 * x + s2 * y;
-	y2 = s2 * x - c2 * y;
-	
-	return [
-		(x2 * c) * w,
-		(y2 + s * x2 * y2 * settings.distortion) * w
-	];
-}
-
-function rpos(p)
-{
-	return [ _scale(p[0]) + WIDTH / 2, _scale(p[1]) + HEIGHT / 2 ];
-}
-
-
 //// main
 
 let frameNumber = 0;
@@ -209,7 +184,7 @@ function draw()
 			
 			if (z - viewZ >= star.z - star.length && z - viewZ < star.z)
 			{
-				p = rpos(pos2(star.x + x, star.y + y, z, a, b));
+				p = screenCoordinates(pos2(star.x + x, star.y + y, z, a, b));
 				
 				if (lastP !== null)
 				{

@@ -18,6 +18,11 @@ function _y(y)
 	return HEIGHT / 2 + _scale(y);
 }
 
+function screenCoordinates(p)
+{
+	return [ _x(p[0]), _y(p[1]) ];
+}
+
 function clamp(x, min, max)
 {
 	if (x < min)
@@ -157,7 +162,3 @@ function pos2(x, y, z, a, b)
 	];
 }
 
-function rpos(p)
-{
-	return [ _scale(p[0]) + WIDTH / 2, _scale(p[1]) + HEIGHT / 2 ];
-}

@@ -155,7 +155,7 @@ function draw()
 			
 			if (z - viewZ >= star.z - star.length && z - viewZ < star.z)
 			{
-				p = rpos(pos2(star.x + x, star.y + y, z, a, b));
+				p = screenCoordinates(pos2(star.x + x, star.y + y, z, a, b));
 				
 				if (lastP !== null)
 				{
