@@ -138,12 +138,14 @@ function drawBodies()
 		{
 			c = ((stripes - j) / stripes);
 			
+/*
 			if (Math.floor(frameNumber + b.orbitRadius) % 150 == j)
 			{
 				ctx.strokeStyle = "#fff";
 			}
 			else
 			{
+*/
 				if (b.type == TYPE_PLANET)
 				{
 					// ctx.strokeStyle = "rgba(255,220,30," + c + ")";
@@ -153,7 +155,9 @@ function drawBodies()
 				{
 					ctx.strokeStyle = "rgba(0,200,255," + c + ")";
 				}
+/*
 			}
+*/
 			a = b.position - j * 2 * 1/(stripes * 2 * 1.1);
 			// a = j * 2 * 1/(stripes * 2 * 1.1);
 			
