@@ -4,12 +4,20 @@ let canvas = null;
 let ctx = null;
 let body = null;
 let gui = null;
+let lastFrameTime = 0;
 
 let settings = {
 };
 
 function draw()
 {
+	lastFrameTime = (new Date()).getTime();
+}
+
+function regenerate()
+{
+	ctx.fillStyle = "#000";
+	ctx.fillRect(0, 0, WIDTH, HEIGHT);
 }
 
 function init()
