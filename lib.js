@@ -19,6 +19,12 @@ function _y(y)
 	return HEIGHT / 2 + _scale(y);
 }
 
+function _parallax(x, distance, weight)
+{
+//	return x + 1000 * Math.pow(1, -distance) * (1-_p);
+	return x + (weight ? weight : 400) * (1 / (distance)) * (1 - _p);
+}
+
 function screenCoordinates(p)
 {
 	return [ _x(p[0]), _y(p[1]) ];

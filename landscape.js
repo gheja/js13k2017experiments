@@ -23,6 +23,8 @@ let settings = {
 	
 	density: 0.32,
 	
+	position: 0,
+	
 	autoUpdate: false,
 	
 	stars: [],
@@ -31,6 +33,8 @@ let settings = {
 	hill1: [],
 	hill2: []
 };
+
+let _p = 0;
 
 
 
@@ -72,6 +76,15 @@ function draw()
 	
 	_raf(draw);
 	
+	settings.position += 0.0025;
+	if (settings.position > 1.5)
+	{
+		regenerate();
+		settings.position = 0;
+	}
+	
+	_p = clamp(settings.position, 0, 1);
+	
 	a = 1;
 	
 	if (settings.autoUpdate)
@@ -86,56 +99,65 @@ function draw()
 	ctx.fillStyle = "rgba(255,255,255,0.5)";
 	for (i=0; i<settings.stars.length; i++)
 	{
-		_arc(settings.stars[i].x, settings.stars[i].y, 1, 0, 1, 1);
+		_arc(settings.stars[i].x, _parallax(settings.stars[i].y, 30), 1, 0, 1, 1);
 	}
 	
+	// sun mask - no stars between planet and sun please
+	ctx.fillStyle = "#000";
+	_arc(settings.sun.x, _parallax(settings.sun.y, 20), settings.sun.radius, 0, 1, 1);
+	
+	// moons
 	for (i=0; i<settings.moons.length; i++)
 	{
 		ctx.fillStyle = settings.moons[i].color;
-		_arc(settings.moons[i].x, settings.moons[i].y, settings.moons[i].radius, 0, 1, 1);
+		_arc(settings.moons[i].x, _parallax(settings.moons[i].y, 10), settings.moons[i].radius, 0, 1, 1);
 	}
 	
+	// atmosphere
 	for (i=0; i<HEIGHT; i++)
 	{
-		n = Math.floor(i / HEIGHT * PALETTE_LENGTH);
+		n = clamp(Math.floor((i / HEIGHT * PALETTE_LENGTH) * (Math.pow(_p, 0.9))), 0, PALETTE_LENGTH - 1);
 		
 		ctx.fillStyle = palette[n];
 		ctx.fillRect(0, i, WIDTH, 1);
 	}
 	
+	// sun
 	ctx.globalCompositeOperation = 'screen';
 	ctx.fillStyle = settings.sun.color;
-	_arc(settings.sun.x, settings.sun.y, settings.sun.radius, 0, 1, 1);
+	_arc(settings.sun.x, _parallax(settings.sun.y, 20), settings.sun.radius, 0, 1, 1);
 	
-	function puthill(hill, top)
+	function puthill(hill, top, p)
 	{
 		let i;
 		
 		ctx.beginPath();
-		ctx.moveTo(0, HEIGHT / 2 + _scale(top));
+		ctx.moveTo(0, _scale(_parallax(top, p)) + HEIGHT / 2);
 		for (i=0; i<hill.length; i++)
 		{
-			ctx.lineTo((i + 1) * WIDTH / hill.length, _scale(hill[i] * 30 + top) + HEIGHT / 2);
+			ctx.lineTo((i + 1) * WIDTH / hill.length, _scale(_parallax(hill[i] * 30 + top, p)) + HEIGHT / 2);
 		}
 		ctx.lineTo(WIDTH, HEIGHT);
 		ctx.lineTo(0, HEIGHT);
 		ctx.fill();
 	}
 	
+	// hill mask
 	ctx.globalCompositeOperation = 'source-over';
 	ctx.fillStyle = "#000";
-	puthill(settings.hill1, 100.5);
+	puthill(settings.hill1, 80.5, 2);
 	
+	// hills
 	ctx.globalCompositeOperation = 'screen';
-	puthill(settings.hill1, 100.5);
+	puthill(settings.hill1, 80.5, 2);
 	ctx.fillStyle = hsla2rgba_(0.15, 1, 0.6, 0.9);
-	puthill(settings.hill1, 100);
-	puthill(settings.hill2, 150);
+	puthill(settings.hill1, 80, 2);
+	puthill(settings.hill2, 120, 1.6);
 	
 	ctx.globalCompositeOperation = 'source-over';
 	// sun color:
 	ctx.fillStyle = hsla2rgba_(0.0, 1, 0.5, 0.33);
-	puthill(settings.hill1, 100);
+	puthill(settings.hill1, 80, 2);
 	// ctx.fillRect(0, 0, WIDTH, HEIGHT);
 }
 
@@ -227,6 +249,7 @@ function init()
 	tmp.add(settings, 'pow').min(0.1).max(10).listen();
 	
 	tmp.add(settings, 'density').min(0).max(1).step(0.01).listen();
+	tmp.add(settings, 'position').min(0).max(1).listen();
 	tmp.add(settings, 'autoUpdate');
 	tmp.add(window, 'regenerate');
 	
