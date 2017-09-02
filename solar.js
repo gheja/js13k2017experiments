@@ -37,11 +37,11 @@ function generateBody(parent, size, r, speed, type)
 		parent: parent,
 		def: arrayRandom(BODY_TYPE_DEFINITIONS[type]),
 		radiusBase: size,
-		radiusScale: Math.random(),
+		radiusScale: randFloat(),
 		radius: 0,
 		orbitRadius: r,
-		position: Math.random(),
-		speed: speed * (Math.random() + 0.5) * 5,
+		position: randFloat(),
+		speed: speed * (randFloat() + 0.5) * 5,
 		type: type,
 		childCount: 0
 	};
@@ -54,7 +54,7 @@ function generateBody(parent, size, r, speed, type)
 	}
 	
 	// randomize color a bit
-	a.def[0] *= 1 + (Math.random() - 0.5) * 0.05;
+	a.def[0] *= 1 + randPlusMinus(0.025);
 	
 	return a;
 }
@@ -73,7 +73,7 @@ function regenerate()
 	{
 		a = system.bodies.push(generateBody(system.bodies[0], 5, i * 30 + 50, 0.0001, TYPE_PLANET)) - 1;
 		
-		c = Math.floor(Math.random() * 3);
+		c = Math.floor(randFloat() * 3);
 		
 		for (j=0; j<c; j++)
 		{

@@ -46,11 +46,11 @@ let vy = -5;
 function getStarColor()
 {
 	// let x = [ "acf", "cde", "eef", "ffd", "ffa", "fe6", "fa3" ];
-	// return "#" + x[Math.floor(Math.random() * x.length) ];
+	// return "#" + x[Math.floor(randFloat() * x.length) ];
 	
-	// return hsla2rgba_(0.55 + rand(0.15), 1, 0.75 + rand(0.25), 0.5 + rand(0.5));
+	// return hsla2rgba_(0.55 + randPlusMinus(0.075), 1, 0.75 + randPlusMinus(0.125), 0.5 + randPlusMinus(0.25));
 	
-	return hsla2rgba_(0.53 + rand(0.12), 1, 0.6 + rand(0.5), 1);
+	return hsla2rgba_(0.53 + randPlusMinus(0.06), 1, 0.6 + randPlusMinus(0.25), 1);
 }
 
 function generateStars()
@@ -66,11 +66,11 @@ function generateStars()
 		
 		while (Math.sqrt(x * x + y * y) < 300)
 		{
-			x = rand(1200);
-			y = rand(1200);
+			x = randPlusMinus(600);
+			y = randPlusMinus(600);
 		}
 		
-		cstars.push({ x: x, y: y, z: - Math.random() * 20, length: Math.random() * 10, size: Math.random() * 12 + 2, color: getStarColor() });
+		cstars.push({ x: x, y: y, z: - randFloat() * 20, length: randFloat() * 10, size: randFloat() * 12 + 2, color: getStarColor() });
 	}
 }
 
@@ -82,10 +82,10 @@ function pushStep(shift)
 		csteps.shift();
 	}
 	
-	va = clamp(va + rand(0.002), -0.05, 0.05);
-	vb = clamp(vb + rand(0.001), -0.025, 0.025);
-	vx = clamp(vx + rand(2), -20, 20);
-	vy = clamp(vy + rand(2), -20, 20);
+	va = clamp(va + randPlusMinus(0.001), -0.05, 0.05);
+	vb = clamp(vb + randPlusMinus(0.0005), -0.025, 0.025);
+	vx = clamp(vx + randPlusMinus(1), -20, 20);
+	vy = clamp(vy + randPlusMinus(1), -20, 20);
 	
 	csteps.push({ a: va, b: vb, x: vx, y: vy });
 }

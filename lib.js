@@ -54,9 +54,14 @@ function cos(x)
 	return Math.cos(x * PI2);
 }
 
-function rand(x)
+function randFloat()
 {
-	return (Math.random() - 0.5) * x;
+	return Math.random();
+}
+
+function randPlusMinus(x)
+{
+	return (randFloat() - 0.5) * x * 2;
 }
 
 function _hackClone(x)
@@ -78,7 +83,7 @@ function goFullScreen()
 
 function arrayRandom(a)
 {
-	return a[Math.floor(Math.random() * a.length)];
+	return a[Math.floor(randFloat() * a.length)];
 }
 
 function _arc(x, y, r, a, b, fill, stroke)
