@@ -52,26 +52,50 @@ function draw()
 		
 	}
 	
-	ctx.strokeStyle = "#ea0";
+	// angle highlight
+	ctx.strokeStyle = "#666";
+	ctx.lineWidth = _scale(1);
 	for (i=0; i<Math.min(arr.stepsShown, arr.steps.length); i++)
 	{
 		a = arr.steps[i];
-		_arc(a.star.x, a.star.y, PATH_STEP_DISTANCE, a.angleMin, a.angleMax, 0, 1);
+		// _arc(a.star.x, a.star.y, PATH_STEP_DISTANCE, a.angleMin, a.angleMax, 0, 1);
+		
+		ctx.beginPath();
+		ctx.moveTo(_x(a.star.x), _y(a.star.y));
+		ctx.arc(_x(a.star.x), _y(a.star.y), _scale(PATH_STEP_DISTANCE), a.angleMin * PI2, a.angleMax * PI2);
+		ctx.closePath();
+		ctx.stroke();
 	}
 	
+	// star highlight
 	ctx.strokeStyle = arr.success ? "#0e0" : "#e00";
+	ctx.lineWidth = _scale(2);
 	for (i=0; i<Math.min(arr.stepsShown, arr.steps.length); i++)
 	{
 		a = arr.steps[i];
-		_arc(a.star.x, a.star.y, 3, 0, 1, 0, 1);
+		_arc(a.star.x, a.star.y, 4, 0, 1, 0, 1);
+	}
+	
+	// path highlight
+	if (arr.stepsShown > 0 && arr.steps.length > 0)
+	{
+		ctx.beginPath();
+		ctx.moveTo(_x(arr.steps[0].star.x), _y(arr.steps[0].star.y))
+		for (i=0; i<Math.min(arr.stepsShown, arr.steps.length); i++)
+		{
+			a = arr.steps[i];
+			ctx.lineTo(_x(a.star.x), _y(a.star.y));
+		}
+		ctx.stroke();
 	}
 }
 
-function regenerate()
+function regenerateStars()
 {
 	let i, j, k, a, b, min;
 	
 	stars.length = 0;
+	arr.steps.length = 0;
 	
 	for (i=0; i<STAR_COUNT; i++)
 	{
@@ -111,7 +135,7 @@ function getAngle(p1, p2)
 	return Math.atan2(p1.y - p2.y, p2.x - p1.x) / PI2;
 }
 
-function newPath()
+function regeneratePath()
 {
 	let i, j, k, a, b, c, current, best, angle, dist, minDist;
 	
@@ -181,9 +205,11 @@ function newPath()
 		
 		if (arr.success)
 		{
-			break;
+			return true;
 		}
 	}
+	
+	return false;
 }
 
 function step()
@@ -209,9 +235,11 @@ function init()
 	gui = new dat.gui.GUI();
 	
 	gui.add(arr, 'stepsShown').min(0).max(PATH_STEPS);
-	gui.add(window, 'newPath');
+	gui.add(window, 'regenerateStars');
+	gui.add(window, 'regeneratePath');
 	
-	regenerate();
+	regenerateStars();
+	regeneratePath();
 }
 
 var _raf = window.requestAnimationFrame;
