@@ -27,7 +27,9 @@ let settings = {
 	
 	stars: [],
 	moons: [],
-	sun: null
+	sun: null,
+	hill1: [],
+	hill2: []
 };
 
 
@@ -68,6 +70,8 @@ function draw()
 {
 	let i, n, c1, c2, a, p1, p2;
 	
+	_raf(draw);
+	
 	a = 1;
 	
 	if (settings.autoUpdate)
@@ -103,7 +107,36 @@ function draw()
 	ctx.fillStyle = settings.sun.color;
 	_arc(settings.sun.x, settings.sun.y, settings.sun.radius, 0, 1, 1);
 	
-	_raf(draw);
+	function puthill(hill, top)
+	{
+		let i;
+		
+		ctx.beginPath();
+		ctx.moveTo(0, HEIGHT / 2 + _scale(top));
+		for (i=0; i<hill.length; i++)
+		{
+			ctx.lineTo((i + 1) * WIDTH / hill.length, _scale(hill[i] * 30 + top) + HEIGHT / 2);
+		}
+		ctx.lineTo(WIDTH, HEIGHT);
+		ctx.lineTo(0, HEIGHT);
+		ctx.fill();
+	}
+	
+	ctx.globalCompositeOperation = 'source-over';
+	ctx.fillStyle = "#000";
+	puthill(settings.hill1, 100.5);
+	
+	ctx.globalCompositeOperation = 'screen';
+	puthill(settings.hill1, 100.5);
+	ctx.fillStyle = hsla2rgba_(0.15, 1, 0.6, 0.9);
+	puthill(settings.hill1, 100);
+	puthill(settings.hill2, 150);
+	
+	ctx.globalCompositeOperation = 'source-over';
+	// sun color:
+	ctx.fillStyle = hsla2rgba_(0.0, 1, 0.5, 0.33);
+	puthill(settings.hill1, 100);
+	// ctx.fillRect(0, 0, WIDTH, HEIGHT);
 }
 
 function regenerate()
@@ -151,6 +184,14 @@ function regenerate()
 		color: hsla2rgba_(0.0, 1, 0.5, 1),
 		radius: randFloat() * 30 + 50
 	};
+	
+	settings.hill1.length = 0;
+	settings.hill2.length = 0;
+	for (i=0; i<=10; i++)
+	{
+		settings.hill1.push(randFloat());
+		settings.hill2.push(randFloat());
+	}
 	
 	buildPalette();
 }
