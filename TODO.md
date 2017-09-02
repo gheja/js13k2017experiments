@@ -1,9 +1,14 @@
 - [ ] star map
 - [ ] planet/moon selection
 - [ ] star selection
+- [ ] win/lose conditions
 - [ ] buttons
 - [ ] main menu
+- [ ] planet/moon generation tuning
 - [ ] parallax scrolling
+- [ ] transitions
+- [ ] past path highlight on star map
+- [ ] past planet/moon highlight (after visit)
 - [ ] noise texture
   - nebulae: starting at 0 on edges, 1 on center?
 - [ ] nebulae composition
