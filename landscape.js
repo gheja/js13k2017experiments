@@ -1,6 +1,6 @@
 "use strict";
 
-const PALETTE_LENGTH = 1000;
+const PALETTE_LENGTH = 5000;
 
 let canvas = null;
 let ctx = null;
