@@ -20,6 +20,7 @@
 - [ ] star/planet/moon name generation
 - [ ] spherical distortion
 - [ ] planet/moon spherical noise overlay
+- [ ] selectable pet name?
 
 - [ ] ? sound effects
 - [ ] ? some simple background music
