@@ -1,9 +1,12 @@
 - [ ] star map
+- [ ] planet/moon selection
+- [ ] star selection
 - [ ] buttons
 - [ ] main menu
 - [ ] parallax scrolling
 - [ ] noise texture
-      - nebulae: starting at 0 on edges, 1 on center?
+  - nebulae: starting at 0 on edges, 1 on center?
 - [ ] nebulae composition
+- [ ] star/planet/moon name generation
 - [ ] spherical distortion
 - [ ] planet/moon spherical noise overlay
