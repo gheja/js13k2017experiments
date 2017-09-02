@@ -12,12 +12,12 @@ let settings = {
 function draw()
 {
 	lastFrameTime = (new Date()).getTime();
+	ctx.fillStyle = "#000";
+	ctx.fillRect(0, 0, WIDTH, HEIGHT);
 }
 
 function regenerate()
 {
-	ctx.fillStyle = "#000";
-	ctx.fillRect(0, 0, WIDTH, HEIGHT);
 }
 
 function init()
