@@ -99,24 +99,24 @@ function draw()
 	ctx.fillStyle = "rgba(255,255,255,0.5)";
 	for (i=0; i<settings.stars.length; i++)
 	{
-		_arc(settings.stars[i].x, _parallax(settings.stars[i].y, 30), 1, 0, 1, 1);
+		_arc(settings.stars[i].x, _parallax(settings.stars[i].y, 10), 1, 0, 1, 1);
 	}
 	
 	// sun mask - no stars between planet and sun please
 	ctx.fillStyle = "#000";
-	_arc(settings.sun.x, _parallax(settings.sun.y, 20), settings.sun.radius, 0, 1, 1);
+	_arc(settings.sun.x, _parallax(settings.sun.y, 5), settings.sun.radius, 0, 1, 1);
 	
 	// moons
 	for (i=0; i<settings.moons.length; i++)
 	{
 		ctx.fillStyle = settings.moons[i].color;
-		_arc(settings.moons[i].x, _parallax(settings.moons[i].y, 10), settings.moons[i].radius, 0, 1, 1);
+		_arc(settings.moons[i].x, _parallax(settings.moons[i].y, 4), settings.moons[i].radius, 0, 1, 1);
 	}
 	
 	// atmosphere
 	for (i=0; i<HEIGHT; i++)
 	{
-		n = clamp(Math.floor((i / HEIGHT * PALETTE_LENGTH) * (Math.pow(_p, 0.9))), 0, PALETTE_LENGTH - 1);
+		n = clamp(Math.floor((i / HEIGHT * PALETTE_LENGTH) * (Math.pow((_p + 0.2), 0.9))), 0, PALETTE_LENGTH - 1);
 		
 		ctx.fillStyle = palette[n];
 		ctx.fillRect(0, i, WIDTH, 1);
@@ -125,7 +125,7 @@ function draw()
 	// sun
 	ctx.globalCompositeOperation = 'screen';
 	ctx.fillStyle = settings.sun.color;
-	_arc(settings.sun.x, _parallax(settings.sun.y, 20), settings.sun.radius, 0, 1, 1);
+	_arc(settings.sun.x, _parallax(settings.sun.y, 5), settings.sun.radius, 0, 1, 1);
 	
 	function puthill(hill, top, p)
 	{
