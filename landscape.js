@@ -58,7 +58,7 @@ function ball(ctx, x, y, r)
 		b = i/a;
 		
 		ctx.beginPath();
-		ctx.arc(x + (b/2) * r, y + (b/2) * r, r * (b * b * b), 0, 2 * Math.PI);
+		ctx.arc(x + (b/2) * r, y + (b/2) * r, r * (b * b * b), 0, PI2);
 		ctx.fill();
 	}
 }
@@ -85,7 +85,7 @@ function draw()
 	for (i=0; i<50; i++)
 	{
 		ctx.beginPath();
-		ctx.arc(prng.random() * WIDTH, prng.random() * HEIGHT, _scale(1), 0, 2 * Math.PI);
+		ctx.arc(prng.random() * WIDTH, prng.random() * HEIGHT, _scale(1), 0, PI2);
 		ctx.fill();
 	}
 	

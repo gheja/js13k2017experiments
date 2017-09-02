@@ -1,6 +1,7 @@
 "use strict";
 
-const PI2 = 2 * Math.PI;
+const PI = Math.PI;
+const PI2 = 2 * PI;
 // const PI2 = 6.283;
 
 function _scale(x)
