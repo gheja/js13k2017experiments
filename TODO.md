@@ -4,6 +4,11 @@
 - [ ] win/lose conditions
 - [ ] buttons
 - [ ] main menu
+- [ ] objectives/talk design
+- [ ] star map ship design
+- [ ] solar system ship design
+- [ ] landing/landed ship design
+- [ ] cat design
 - [ ] planet/moon generation tuning
 - [ ] parallax scrolling
 - [ ] transitions
@@ -15,3 +20,6 @@
 - [ ] star/planet/moon name generation
 - [ ] spherical distortion
 - [ ] planet/moon spherical noise overlay
+
+- [ ] ? sound effects
+- [ ] ? some simple background music
