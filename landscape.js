@@ -6,7 +6,6 @@ let canvas = null;
 let ctx = null;
 let body = null;
 let gui = null;
-let prng = null;
 let _seed = 0;
 
 let palette = [];
@@ -26,7 +25,9 @@ let settings = {
 	
 	autoUpdate: false,
 	
-	moons: 0
+	stars: [],
+	moons: [],
+	sun: null
 };
 
 
@@ -77,26 +78,18 @@ function draw()
 	ctx.globalCompositeOperation = 'source-over';
 	ctx.fillStyle = "#000";
 	ctx.fillRect(0, 0, WIDTH, HEIGHT);
-	ctx.fillStyle = "#fff";
-	
-	prng.seed = _seed;
 	
 	ctx.fillStyle = "rgba(255,255,255,0.5)";
-	for (i=0; i<50; i++)
+	for (i=0; i<settings.stars.length; i++)
 	{
-		ctx.beginPath();
-		ctx.arc(prng.random() * WIDTH, prng.random() * HEIGHT, _scale(1), 0, PI2);
-		ctx.fill();
+		_arc(settings.stars[i].x, settings.stars[i].y, 1, 0, 1, 1);
 	}
 	
-	// sun color!
-	ctx.fillStyle = "rgba(255,230,190,0.1)";
-	
-//	for (i=0; i<settings.moons; i++)
+	for (i=0; i<settings.moons.length; i++)
 	{
-		ball(ctx, prng.random() * WIDTH, prng.random() * HEIGHT / 2, _scale(5 + 25 * prng.random()));
+		ctx.fillStyle = settings.moons[i].color;
+		_arc(settings.moons[i].x, settings.moons[i].y, settings.moons[i].radius, 0, 1, 1);
 	}
-//	ctx.globalCompositeOperation = 'screen';
 	
 	for (i=0; i<HEIGHT; i++)
 	{
@@ -107,20 +100,16 @@ function draw()
 	}
 	
 	ctx.globalCompositeOperation = 'screen';
-	
-	// sun color!
-	a = _scale(30 + 30 * prng.random());
-	p1 = prng.random() * WIDTH;
-	p2 = prng.random() * HEIGHT / 2 + HEIGHT / 2;
-	
-	ctx.fillStyle = "rgba(255,255,255,0.3)";
-	ball(ctx, p1, p2, a);
+	ctx.fillStyle = settings.sun.color;
+	_arc(settings.sun.x, settings.sun.y, settings.sun.radius, 0, 1, 1);
 	
 	_raf(draw);
 }
 
-function randomize()
+function regenerate()
 {
+	let i, n;
+	
 	_seed = Math.floor(Math.random() * 1000000);
 	
 	settings.h1 = Math.random();
@@ -136,14 +125,39 @@ function randomize()
 	settings.s2 = 0.2 + Math.random() * 0.5;
 	settings.pow = Math.random();
 	settings.density = Math.random();
-	settings.moons = Math.floor(Math.pow(Math.random(), 4) * 3);
+	
+	n = Math.floor(randFloat() * 3);
+	
+	settings.stars.length = 0;
+	for (i=0; i<500; i++)
+	{
+		settings.stars.push({ x: randPlusMinus(1200), y: randPlusMinus(1200) });
+	}
+	
+	settings.moons.length = 0;
+	for (i=0; i<n; i++)
+	{
+		settings.moons.push({
+			x: randPlusMinus(180),
+			y: randPlusMinus(100) - 100,
+			color: "#fff",
+			radius: randFloat() * 25 + 5
+		});
+	}
+	
+	settings.sun = {
+		x: randPlusMinus(180),
+		y: randPlusMinus(100) + 100,
+		color: "#fff",
+		radius: randFloat() * 25 + 30
+	};
+	
+	buildPalette();
 }
 
 function init()
 {
 	let tmp;
-	
-	prng = new AlmostRandom();
 	
 	canvas = document.createElement("canvas");
 	
@@ -156,28 +170,28 @@ function init()
 	
 	settings.update = buildPalette;
 	
-	randomize();
 	
 	gui = new dat.gui.GUI();
 	
 	tmp = gui.addFolder("Atmosphere");
 	
-	tmp.add(settings, 'h1').min(0).max(1).step(0.01);
-	tmp.add(settings, 's1').min(0).max(1).step(0.01);
-	tmp.add(settings, 'l1').min(0).max(1).step(0.01);
+	tmp.add(settings, 'h1').min(0).max(1).step(0.01).listen();
+	tmp.add(settings, 's1').min(0).max(1).step(0.01).listen();
+	tmp.add(settings, 'l1').min(0).max(1).step(0.01).listen();
 	
-	tmp.add(settings, 'h2').min(0).max(1).step(0.01);
-	tmp.add(settings, 's2').min(0).max(1).step(0.01);
-	tmp.add(settings, 'l2').min(0).max(1).step(0.01);
+	tmp.add(settings, 'h2').min(0).max(1).step(0.01).listen();
+	tmp.add(settings, 's2').min(0).max(1).step(0.01).listen();
+	tmp.add(settings, 'l2').min(0).max(1).step(0.01).listen();
 	
-	tmp.add(settings, 'pow').min(0.1).max(10);
+	tmp.add(settings, 'pow').min(0.1).max(10).listen();
 	
-	tmp.add(settings, 'density').min(0).max(1).step(0.01);
+	tmp.add(settings, 'density').min(0).max(1).step(0.01).listen();
 	tmp.add(settings, 'autoUpdate');
+	tmp.add(window, 'regenerate');
 	
 	tmp.open();
 	
-	buildPalette();
+	regenerate();
 	
 	draw();
 }
