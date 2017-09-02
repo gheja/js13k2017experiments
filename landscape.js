@@ -139,7 +139,7 @@ function regenerate()
 	{
 		settings.moons.push({
 			x: randPlusMinus(180),
-			y: randPlusMinus(100) - 100,
+			y: randPlusMinus(50) - 150,
 			color: "#fff",
 			radius: randFloat() * 25 + 5
 		});
@@ -147,9 +147,9 @@ function regenerate()
 	
 	settings.sun = {
 		x: randPlusMinus(180),
-		y: randPlusMinus(100) + 100,
-		color: "#fff",
-		radius: randFloat() * 25 + 30
+		y: randPlusMinus(50) + 100,
+		color: hsla2rgba_(0.0, 1, 0.5, 1),
+		radius: randFloat() * 30 + 50
 	};
 	
 	buildPalette();
