@@ -1,5 +1,22 @@
 "use strict";
 
+const TYPE_STAR = 0;
+const TYPE_PLANET = 1;
+const TYPE_MOON = 2;
+
+let BODY_TYPE_DEFINITIONS =
+[
+	// star == 0
+	[ [ 0.13, 1.0, 0.7, "warm" ], [ 0.5, 0.4, 0.85, "cold" ], [ 1.0, 0.8, 0.4, "dying red" ] ],
+	
+	// planet == 1
+	[ [ 0.55, 0.5, 0.8, "icy" ], [ 0.25, 0.5, 0.5, "forest" ], [ 0.12, 0.7, 0.5, "deserted" ], [ 0, 0.5, 0.5, "rusty red" ] ],
+	
+	// moon == 2
+	[ [ 0.55, 0.2, 0.9, "icy" ], [ 0, 0.0, 0.3, "rocky" ] ]
+];
+
+
 const PALETTE_LENGTH = 5000;
 
 let canvas = null;
@@ -163,7 +180,7 @@ function draw()
 
 function regenerate()
 {
-	let i, n;
+	let i, n, a;
 	
 	_seed = Math.floor(Math.random() * 1000000);
 	
@@ -192,18 +209,22 @@ function regenerate()
 	settings.moons.length = 0;
 	for (i=0; i<n; i++)
 	{
+		a = arrayRandom(BODY_TYPE_DEFINITIONS[TYPE_MOON]);
 		settings.moons.push({
 			x: randPlusMinus(180),
-			y: randPlusMinus(50) - 150,
-			color: "#fff",
+			y: randPlusMinus(40) - 130,
+			color: hsla2rgba_(a[0], a[1], a[2], 1),
 			radius: randFloat() * 25 + 5
 		});
 	}
 	
+	a = arrayRandom(BODY_TYPE_DEFINITIONS[TYPE_STAR]);
 	settings.sun = {
+//		x: randPlusMinus(60) - 120,
 		x: randPlusMinus(180),
-		y: randPlusMinus(50) + 100,
-		color: hsla2rgba_(0.0, 1, 0.5, 1),
+		y: randPlusMinus(40) + 80,
+		// color: hsla2rgba_(0.0, 1, 0.5, 1),
+		color: hsla2rgba_(a[0], a[1], a[2], 1),
 		radius: randFloat() * 30 + 50
 	};
 	
