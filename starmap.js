@@ -26,11 +26,6 @@ let arr = {
 	stepsShown: PATH_STEPS
 };
 
-function getDistance(p1, p2)
-{
-	return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
-}
-
 function draw()
 {
 	let i, a;
@@ -128,11 +123,6 @@ function pathAddStep(a)
 {
 	a.star.visited = true;
 	arr.steps.push(a);
-}
-
-function getAngle(p1, p2)
-{
-	return Math.atan2(p1.y - p2.y, p2.x - p1.x) / PI2;
 }
 
 function regeneratePath()

@@ -171,6 +171,17 @@ function pos2(x, y, z, a, b)
 	];
 }
 
+function getDistance(p1, p2)
+{
+	return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
+}
+
+function getAngle(p1, p2)
+{
+	return Math.atan2(p1.y - p2.y, p2.x - p1.x) / PI2;
+}
+
+
 
 //// canvas layers
 function layerCreate(name, drawFunction)
