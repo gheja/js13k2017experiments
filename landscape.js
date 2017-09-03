@@ -99,7 +99,7 @@ function draw()
 	ctx.fillStyle = "rgba(255,255,255,0.5)";
 	for (i=0; i<settings.stars.length; i++)
 	{
-		_arc(settings.stars[i].x, _parallax(settings.stars[i].y, 10), 1, 0, 1, 1);
+		_arc(settings.stars[i].x, _parallax(settings.stars[i].y, 10), 2, 0, 1, 1);
 	}
 	
 	// sun mask - no stars between planet and sun please
