@@ -23,7 +23,6 @@ let canvas = null;
 let ctx = null;
 let body = null;
 let gui = null;
-let _seed = 0;
 let _layers = [];
 let _frameNumber = 0;
 
@@ -78,21 +77,6 @@ function buildPalette()
 			landscapeLerp(settings.l1, settings.l2, a),
 			Math.pow(a, 1 - settings.density * 0.88)
 		);
-	}
-}
-
-function ball(ctx, x, y, r)
-{
-	let i, b;
-	const a = 500;
-	
-	for (i=0; i<a; i++)
-	{
-		b = i/a;
-		
-		ctx.beginPath();
-		ctx.arc(x + (b/2) * r, y + (b/2) * r, r * (b * b * b), 0, PI2);
-		ctx.fill();
 	}
 }
 
@@ -192,10 +176,8 @@ function regenerate()
 {
 	let i, n, a;
 	
-	_seed = Math.floor(Math.random() * 1000000);
-	
 	settings.h1 = Math.random();
-	if (Math.random() < 0.5)
+	if (randFloat() < 0.5)
 	{
 		settings.h2 = settings.h1 - 0.1 - Math.random() * 0.5;
 	}
@@ -204,11 +186,10 @@ function regenerate()
 		settings.h2 = settings.h1 + 0.1 + Math.random() * 0.5;
 		settings.h2 = settings.h1 + 0.1 + Math.random() * 0.5;
 	}
-	settings.s2 = 0.2 + Math.random() * 0.5;
-	settings.pow = Math.random();
-	settings.density = Math.random();
+	settings.s2 = 0.2 + randFloat() * 0.5;
+	settings.pow = randFloat();
+	settings.density = randFloat();
 	
-	n = Math.floor(randFloat() * 3);
 	
 	settings.stars.length = 0;
 	for (i=0; i<500; i++)
@@ -216,6 +197,7 @@ function regenerate()
 		settings.stars.push({ x: randPlusMinus(1200), y: randPlusMinus(1200) });
 	}
 	
+	n = Math.floor(randFloat() * 3);
 	settings.moons.length = 0;
 	for (i=0; i<n; i++)
 	{
