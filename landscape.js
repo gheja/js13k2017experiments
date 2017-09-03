@@ -44,6 +44,7 @@ let settings = {
 	
 	autoUpdate: false,
 	autoPosition: true,
+	hillColor: "",
 	
 	stars: [],
 	moons: [],
@@ -171,7 +172,7 @@ function draw()
 	// hills
 	ctx.globalCompositeOperation = 'screen';
 	puthill(settings.hill1, 80.5, 2);
-	ctx.fillStyle = hsla2rgba_(0.15, 1, 0.6, 0.9);
+	ctx.fillStyle = settings.hillColor;
 	puthill(settings.hill1, 80, 2);
 	puthill(settings.hill2, 120, 1.6);
 	
@@ -231,6 +232,9 @@ function regenerate()
 		color: hsla2rgba_(a[0], a[1], a[2], 1),
 		radius: randFloat() * 30 + 50
 	};
+	
+	a = arrayRandom(BODY_TYPE_DEFINITIONS[TYPE_PLANET]);
+	settings.hillColor = hsla2rgba_(a[0], a[1], a[2], 1);
 	
 	settings.hill1.length = 0;
 	settings.hill2.length = 0;
