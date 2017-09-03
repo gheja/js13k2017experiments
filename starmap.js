@@ -1,17 +1,5 @@
 "use strict";
 
-let canvas = null;
-let ctx = null;
-let body = null;
-let gui = null;
-let lastFrameTime = 0;
-
-let stars = [
-];
-
-let settings = {
-};
-
 const PATH_STEPS = 10;
 const PATH_STEP_DISTANCE = 100;
 const PATH_ITERATIONS = 100;
@@ -20,17 +8,26 @@ const STAR_COUNT = 40;
 const STAR_DISTANCE_TARGET = 30;
 const STAR_DISTANCE_ITERATIONS = 100;
 
-let arr = {
-	success: false,
-	steps: [],
-	stepsShown: PATH_STEPS
+let canvas = null;
+let ctx = null;
+let body = null;
+let gui = null;
+let _layers = [];
+let _frameNumber = 0;
+let lastFrameTime = 0;
+
+let map = {
+	stars: [],
+	path: {
+		success: false,
+		steps: [],
+		stepsShown: PATH_STEPS
+	}
 };
 
-function draw()
+function drawStarMap()
 {
 	let i, a;
-	
-	_raf(draw);
 	
 	lastFrameTime = (new Date()).getTime();
 	ctx.fillStyle = "#000";
@@ -39,20 +36,20 @@ function draw()
 	ctx.fillStyle = "#fff";
 	ctx.strokeStyle = "#333";
 	ctx.lineWidth = _scale(1);
-	for (i=0; i<stars.length; i++)
+	for (i=0; i<map.stars.length; i++)
 	{
-		_arc(stars[i].x, stars[i].y, 1, 0, 1, 1);
+		_arc(map.stars[i].x, map.stars[i].y, 1, 0, 1, 1);
 		
-		_arc(stars[i].x, stars[i].y, STAR_DISTANCE_TARGET, 0, 1, 0, 1);
+		_arc(map.stars[i].x, map.stars[i].y, STAR_DISTANCE_TARGET, 0, 1, 0, 1);
 		
 	}
 	
 	// angle highlight
 	ctx.strokeStyle = "#666";
 	ctx.lineWidth = _scale(1);
-	for (i=0; i<Math.min(arr.stepsShown, arr.steps.length); i++)
+	for (i=0; i<Math.min(map.path.stepsShown, map.path.steps.length); i++)
 	{
-		a = arr.steps[i];
+		a = map.path.steps[i];
 		// _arc(a.star.x, a.star.y, PATH_STEP_DISTANCE, a.angleMin, a.angleMax, 0, 1);
 		
 		ctx.beginPath();
@@ -63,22 +60,22 @@ function draw()
 	}
 	
 	// star highlight
-	ctx.strokeStyle = arr.success ? "#0e0" : "#e00";
+	ctx.strokeStyle = map.path.success ? "#0e0" : "#e00";
 	ctx.lineWidth = _scale(2);
-	for (i=0; i<Math.min(arr.stepsShown, arr.steps.length); i++)
+	for (i=0; i<Math.min(map.path.stepsShown, map.path.steps.length); i++)
 	{
-		a = arr.steps[i];
+		a = map.path.steps[i];
 		_arc(a.star.x, a.star.y, 4, 0, 1, 0, 1);
 	}
 	
 	// path highlight
-	if (arr.stepsShown > 0 && arr.steps.length > 0)
+	if (map.path.stepsShown > 0 && map.path.steps.length > 0)
 	{
 		ctx.beginPath();
-		ctx.moveTo(_x(arr.steps[0].star.x), _y(arr.steps[0].star.y))
-		for (i=0; i<Math.min(arr.stepsShown, arr.steps.length); i++)
+		ctx.moveTo(_x(map.path.steps[0].star.x), _y(map.path.steps[0].star.y))
+		for (i=0; i<Math.min(map.path.stepsShown, map.path.steps.length); i++)
 		{
-			a = arr.steps[i];
+			a = map.path.steps[i];
 			ctx.lineTo(_x(a.star.x), _y(a.star.y));
 		}
 		ctx.stroke();
@@ -89,8 +86,8 @@ function regenerateStars()
 {
 	let i, j, k, a, b, min;
 	
-	stars.length = 0;
-	arr.steps.length = 0;
+	map.stars.length = 0;
+	map.path.steps.length = 0;
 	
 	for (i=0; i<STAR_COUNT; i++)
 	{
@@ -106,7 +103,7 @@ function regenerateStars()
 			min = 1000;
 			for (k=0; k<i; k++)
 			{
-				min = Math.min(min, getDistance(a, stars[k]));
+				min = Math.min(min, getDistance(a, map.stars[k]));
 			}
 			
 			if (min > STAR_DISTANCE_TARGET)
@@ -115,34 +112,34 @@ function regenerateStars()
 			}
 		}
 		
-		stars.push(a);
+		map.stars.push(a);
 	}
 }
 
 function pathAddStep(a)
 {
 	a.star.visited = true;
-	arr.steps.push(a);
+	map.path.steps.push(a);
 }
 
 function regeneratePath()
 {
 	let i, j, k, a, b, c, current, best, angle, dist, minDist;
 	
-	arr.success = false;
-	arr.steps.length = 0;
+	map.path.success = false;
+	map.path.steps.length = 0;
 	
 	for (i=0; i<1; i++)
 	{
-		arr.success = true;
+		map.path.success = true;
 		
-		for (k=0; k<stars.length; k++)
+		for (k=0; k<STAR_COUNT; k++)
 		{
-			stars[k].visited = false;
+			map.stars[k].visited = false;
 		}
 		
 		pathAddStep({
-			star: arrayRandom(stars),
+			star: arrayRandom(map.stars),
 			angleMin: -0.3,
 			angleMax: 0.3
 		});
@@ -150,20 +147,20 @@ function regeneratePath()
 		for (j=0; j<PATH_STEPS; j++)
 		{
 			c = null;
-			current = arr.steps[arr.steps.length - 1];
+			current = map.path.steps[map.path.steps.length - 1];
 			
 			console.log("current: " + current.angleMin + ", " + current.angleMax);
 			
 			minDist = 1000;
-			for (k=0; k<stars.length; k++)
+			for (k=0; k<STAR_COUNT; k++)
 			{
-				if (stars[k].visited)
+				if (map.stars[k].visited)
 				{
 					continue;
 				}
 				
-				dist = getDistance(current.star, stars[k]);
-				angle = -getAngle(current.star, stars[k]);
+				dist = getDistance(current.star, map.stars[k]);
+				angle = -getAngle(current.star, map.stars[k]);
 				
 				if (dist > PATH_STEP_DISTANCE || angle < current.angleMin || angle > current.angleMax)
 				{
@@ -173,7 +170,7 @@ function regeneratePath()
 				if (dist < minDist)
 				{
 					c = {
-						star: stars[k],
+						star: map.stars[k],
 						angleMin: angle - 0.4,
 						angleMax: angle + 0.4
 					};
@@ -186,14 +183,14 @@ function regeneratePath()
 			
 			if (!c)
 			{
-				arr.success = false;
+				map.path.success = false;
 				break;
 			}
 			
 			pathAddStep(c);
 		}
 		
-		if (arr.success)
+		if (map.path.success)
 		{
 			return true;
 		}
@@ -210,13 +207,9 @@ function init()
 {
 	let tmp;
 	
-	canvas = document.createElement("canvas");
-	canvas.width = WIDTH;
-	canvas.height = HEIGHT;
-	ctx = canvas.getContext("2d");
-	
 	body = document.body;
-	body.appendChild(canvas);
+	
+	layerCreate("starmap", drawStarMap);
 	
 	lastFrameTime = (new Date()).getTime();
 	
@@ -224,7 +217,7 @@ function init()
 	
 	gui = new dat.gui.GUI();
 	
-	gui.add(arr, 'stepsShown').min(0).max(PATH_STEPS);
+	gui.add(map.path, 'stepsShown').min(0).max(PATH_STEPS);
 	gui.add(window, 'regenerateStars');
 	gui.add(window, 'regeneratePath');
 	
