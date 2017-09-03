@@ -26,8 +26,6 @@ let gui = null;
 let _layers = [];
 let _frameNumber = 0;
 
-let palette = [];
-
 let settings = {
 	h1: 0,
 	s1: 0.2,
@@ -42,6 +40,7 @@ let settings = {
 	density: 0.32,
 	
 	position: 0,
+	palette: [],
 	
 	autoUpdate: false,
 	autoPosition: true,
@@ -71,7 +70,7 @@ function buildPalette()
 	{
 		a = i / PALETTE_LENGTH;
 		
-		palette[i] = hsla2rgba_(
+		settings.palette[i] = hsla2rgba_(
 			landscapeLerp(settings.h1, settings.h2, a),
 			landscapeLerp(settings.s1, settings.s2, a),
 			landscapeLerp(settings.l1, settings.l2, a),
@@ -129,7 +128,7 @@ function drawLandscape()
 	{
 		n = clamp(Math.floor((i / HEIGHT * PALETTE_LENGTH) * (Math.pow((_p + 0.2), 0.9))), 0, PALETTE_LENGTH - 1);
 		
-		ctx.fillStyle = palette[n];
+		ctx.fillStyle = settings.palette[n];
 		ctx.fillRect(0, i, WIDTH, 1);
 	}
 	
