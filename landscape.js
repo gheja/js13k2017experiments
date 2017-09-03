@@ -288,6 +288,14 @@ function init()
 	regenerate();
 	
 	draw();
+	
+/*
+	// DEMO
+	
+	settings.position = 1;
+	settings.autoPosition = false;
+	window.setInterval(regenerate, 1000);
+*/
 }
 
 var _raf = window.requestAnimationFrame;
