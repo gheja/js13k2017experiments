@@ -21,34 +21,40 @@ let map = {
 	path: {
 		success: false,
 		steps: [],
-		stepsShown: PATH_STEPS
+		stepsShown: PATH_STEPS + 1
 	}
 };
 
 function drawStarMap()
 {
-	let i, a;
+	let i, a, n;
 	
 	lastFrameTime = (new Date()).getTime();
 	ctx.fillStyle = "#000";
 	ctx.fillRect(0, 0, WIDTH, HEIGHT);
 	
-	ctx.fillStyle = "#fff";
+	// star distance
 	ctx.strokeStyle = "#333";
-	ctx.lineWidth = _scale(1);
+	ctx.lineWidth = _scale(2);
 	for (i=0; i<map.stars.length; i++)
 	{
-		_arc(map.stars[i].x, map.stars[i].y, 1, 0, 1, 1);
-		
 		_arc(map.stars[i].x, map.stars[i].y, STAR_DISTANCE_TARGET, 0, 1, 0, 1);
 		
 	}
 	
 	// angle highlight
-	ctx.strokeStyle = "#666";
-	ctx.lineWidth = _scale(1);
-	for (i=0; i<Math.min(map.path.stepsShown, map.path.steps.length); i++)
+	ctx.lineWidth = _scale(2);
+	n = Math.min(map.path.stepsShown, map.path.steps.length)
+	for (i=0; i<n; i++)
 	{
+		if (i == n - 1)
+		{
+			ctx.strokeStyle = "#888";
+		}
+		else
+		{
+			ctx.strokeStyle = "#333";
+		}
 		a = map.path.steps[i];
 		// _arc(a.star.x, a.star.y, PATH_STEP_DISTANCE, a.angleMin, a.angleMax, 0, 1);
 		
@@ -59,9 +65,17 @@ function drawStarMap()
 		ctx.stroke();
 	}
 	
+	if (map.path.stepsShown >= map.path.steps.length)
+	{
+		ctx.strokeStyle = map.path.success ? "#0e0" : "#e00";
+	}
+	else
+	{
+		ctx.strokeStyle = "#999";
+	}
+	ctx.lineWidth = _scale(3);
+	
 	// star highlight
-	ctx.strokeStyle = map.path.success ? "#0e0" : "#e00";
-	ctx.lineWidth = _scale(2);
 	for (i=0; i<Math.min(map.path.stepsShown, map.path.steps.length); i++)
 	{
 		a = map.path.steps[i];
@@ -79,6 +93,13 @@ function drawStarMap()
 			ctx.lineTo(_x(a.star.x), _y(a.star.y));
 		}
 		ctx.stroke();
+	}
+	
+	// star
+	ctx.fillStyle = "#fff";
+	for (i=0; i<map.stars.length; i++)
+	{
+		_arc(map.stars[i].x, map.stars[i].y, 3, 0, 1, 1);
 	}
 }
 
@@ -199,8 +220,42 @@ function regeneratePath()
 	return false;
 }
 
-function step()
+let _demoState = 0;
+let _demoA = 0;
+let _demoB = 0;
+function demoStep()
 {
+	switch (_demoState)
+	{
+		case 0:
+			regenerateStars();
+			_demoState = 1;
+			_demoA = 0;
+		break;
+		
+		case 1:
+			regeneratePath();
+			map.path.stepsShown = 0;
+			_demoState = 2;
+		break;
+		
+		case 2:
+			map.path.stepsShown++;
+			
+			if (map.path.stepsShown > map.path.steps.length + 2)
+			{
+				if (_demoA > 5)
+				{
+					_demoState = 0;
+				}
+				else
+				{
+					_demoState = 1;
+					_demoA++;
+				}
+			}
+		break;
+	}
 }
 
 function init()
@@ -217,12 +272,17 @@ function init()
 	
 	gui = new dat.gui.GUI();
 	
-	gui.add(map.path, 'stepsShown').min(0).max(PATH_STEPS);
+	gui.add(map.path, 'stepsShown').min(0).max(PATH_STEPS + 1).step(1);
 	gui.add(window, 'regenerateStars');
 	gui.add(window, 'regeneratePath');
 	
 	regenerateStars();
 	regeneratePath();
+	
+/*
+	// DEMO
+	window.setInterval(demoStep, 100);
+*/
 }
 
 var _raf = window.requestAnimationFrame;
