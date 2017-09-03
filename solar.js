@@ -14,7 +14,7 @@ let frameNumber = 0;
 let BODY_TYPE_DEFINITIONS =
 [
 	// star == 0
-	[ [ 0.13, 1.0, 0.7, "warm" ], [ 0.5, 0.4, 0.85, "cold" ], [ 1.0, 0.8, 0.4, "dying red" ] ],
+	[ [ 0.13, 1.0, 0.7, "warm" ], [ 0.5, 0.4, 0.9, "cold" ], [ 0, 0.8, 0.4, "dying red" ] ],
 	
 	// planet == 1
 	[ [ 0.55, 0.5, 0.8, "icy" ], [ 0.25, 0.5, 0.5, "forest" ], [ 0.12, 0.7, 0.5, "deserted" ], [ 0, 0.5, 0.5, "rusty red" ] ],
@@ -312,6 +312,10 @@ function init()
 	regenerate();
 	
 	// window.setInterval(updateFps, 1000);
+/*
+	// DEMO
+	window.setInterval(regenerate, 3000);
+*/
 }
 
 var _raf = window.requestAnimationFrame;
