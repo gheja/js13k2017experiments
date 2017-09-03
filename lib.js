@@ -4,6 +4,8 @@ const PI = Math.PI;
 const PI2 = 2 * PI;
 // const PI2 = 6.283;
 
+var _raf = window.requestAnimationFrame;
+
 function _scale(x)
 {
 	return x * SCALE;
@@ -174,3 +176,39 @@ function pos2(x, y, z, a, b)
 	];
 }
 
+
+//// canvas layers
+function layerCreate(name, drawFunction)
+{
+	let a;
+	
+	a = { name: name, visible: true, canvas: document.createElement("canvas"), draw: drawFunction };
+	
+	// TODO: resize on resize
+	a.canvas.width = WIDTH;
+	a.canvas.height = HEIGHT;
+	a.ctx = a.canvas.getContext("2d");
+	
+	body.appendChild(a.canvas);
+	
+	return _layers.push(a) - 1;
+}
+
+function draw()
+{
+	let i;
+	
+	_raf(draw);
+	
+	_frameNumber++;
+	
+	for (i=0; i<_layers.length; i++)
+	{
+		if (_layers[i].visible)
+		{
+			canvas = _layers[i].canvas;
+			ctx = _layers[i].ctx;
+			_layers[i].draw.call();
+		}
+	}
+}

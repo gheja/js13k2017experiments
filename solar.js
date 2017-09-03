@@ -8,7 +8,8 @@ let canvas = null;
 let ctx = null;
 let body = null;
 let gui = null;
-let frameNumber = 0;
+let _layers = [];
+let _frameNumber = 0;
 
 // [ [ h, s, l, type ], [ ... ], ... ]
 let BODY_TYPE_DEFINITIONS =
@@ -273,12 +274,8 @@ function describeBody(b)
 	console.log(s);
 }
 
-function draw()
+function drawSolar()
 {
-	_raf(draw);
-	
-	frameNumber++;
-	
 	ctx.fillStyle = "#000";
 	ctx.fillRect(0, 0, WIDTH, HEIGHT);
 	
@@ -286,25 +283,18 @@ function draw()
 	drawBodies();
 }
 
-function updateFps()
-{
-	document.title = frameNumber;
-	frameNumber = 0;
-}
 
+
+//// main
 function init()
 {
 	let tmp;
 	
-	canvas = document.createElement("canvas");
-	canvas.width = WIDTH;
-	canvas.height = HEIGHT;
-	ctx = canvas.getContext("2d");
-	
 	body = document.body;
-	body.appendChild(canvas);
 	
-	// lastFrameTime = (new Date()).getTime();
+	layerCreate("planets", drawSolar);
+	// layerActivate("planets");
+	// layerDisable("planets");
 	
 	draw();
 	
@@ -317,7 +307,5 @@ function init()
 	window.setInterval(regenerate, 3000);
 */
 }
-
-var _raf = window.requestAnimationFrame;
 
 window.onload = init;

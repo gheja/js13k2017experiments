@@ -24,6 +24,8 @@ let ctx = null;
 let body = null;
 let gui = null;
 let _seed = 0;
+let _layers = [];
+let _frameNumber = 0;
 
 let palette = [];
 
@@ -89,11 +91,9 @@ function ball(ctx, x, y, r)
 	}
 }
 
-function draw()
+function drawLandscape()
 {
 	let i, n, c1, c2, a, p1, p2;
-	
-	_raf(draw);
 	
 	if (settings.autoPosition)
 	{
@@ -251,17 +251,10 @@ function init()
 {
 	let tmp;
 	
-	canvas = document.createElement("canvas");
-	
-	canvas.width = WIDTH;
-	canvas.height = HEIGHT;
-	ctx = canvas.getContext("2d");
-	
 	body = document.body;
-	body.appendChild(canvas);
+	layerCreate("landscape", drawLandscape);
 	
 	settings.update = buildPalette;
-	
 	
 	gui = new dat.gui.GUI();
 	
@@ -297,7 +290,5 @@ function init()
 	window.setInterval(regenerate, 1000);
 */
 }
-
-var _raf = window.requestAnimationFrame;
 
 window.onload = init;
