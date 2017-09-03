@@ -47,11 +47,6 @@ function clamp(x, min, max)
 	return x;
 }
 
-function lerp(a, b, x)
-{
-	return a + (b - a) * Math.pow(x, settings.pow);
-}
-
 function sin(x)
 {
 	return Math.sin(x * PI2);

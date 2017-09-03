@@ -59,6 +59,11 @@ let _p = 0;
 
 
 
+function landscapeLerp(a, b, x)
+{
+	return a + (b - a) * Math.pow(x, settings.pow);
+}
+
 function buildPalette()
 {
 	let i, a;
@@ -68,9 +73,9 @@ function buildPalette()
 		a = i / PALETTE_LENGTH;
 		
 		palette[i] = hsla2rgba_(
-			lerp(settings.h1, settings.h2, a),
-			lerp(settings.s1, settings.s2, a),
-			lerp(settings.l1, settings.l2, a),
+			landscapeLerp(settings.h1, settings.h2, a),
+			landscapeLerp(settings.s1, settings.s2, a),
+			landscapeLerp(settings.l1, settings.l2, a),
 			Math.pow(a, 1 - settings.density * 0.88)
 		);
 	}
