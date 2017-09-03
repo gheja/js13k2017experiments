@@ -43,6 +43,7 @@ let settings = {
 	position: 0,
 	
 	autoUpdate: false,
+	autoPosition: true,
 	
 	stars: [],
 	moons: [],
@@ -93,11 +94,14 @@ function draw()
 	
 	_raf(draw);
 	
-	settings.position += 0.0025;
-	if (settings.position > 1.5)
+	if (settings.autoPosition)
 	{
-		regenerate();
-		settings.position = 0;
+		settings.position += (1 - settings.position) * 0.005 + 0.001;
+		if (settings.position > 1.1)
+		{
+			regenerate();
+			settings.position = 0;
+		}
 	}
 	
 	_p = clamp(settings.position, 0, 1);
@@ -271,6 +275,7 @@ function init()
 	
 	tmp.add(settings, 'density').min(0).max(1).step(0.01).listen();
 	tmp.add(settings, 'position').min(0).max(1).listen();
+	tmp.add(settings, 'autoPosition');
 	tmp.add(settings, 'autoUpdate');
 	tmp.add(window, 'regenerate');
 	
