@@ -1,17 +1,17 @@
 # js13k2017experiments
 
-Just a few experiments.
+Just a few experiments. Most of them runs once, you need to refresh to re-run.
 
-[3drotate.html]
+[3D rotation](./3drotate.html)
 
-[fullscreen.html]
+[Full screen toggling](./fullscreen.html)
 
-[landscape.html]
+[Landscape generation](./landscape.html)
 
-[solar.html]
+[Solar system generator](./solar.html)
 
-[starmap.html]
+[Star map + path generator](./starmap.html)
 
-[transitions.html]
+[Transitions](./transitions.html)
 
-[wormhole.html]
+[Wormhole effect](./wormhole.html)
